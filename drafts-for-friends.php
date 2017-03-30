@@ -12,7 +12,7 @@ Text Domain: wp-draftsforfriends
 class DraftsForFriends	{
 
 	function __construct(){
-    	add_action('init', array(&$this, 'init'));
+			add_action('init', array(&$this, 'init'));
 	}
 
 	function init() {
@@ -41,13 +41,13 @@ class DraftsForFriends	{
 		return is_array($saved_options)? $saved_options : array();
 	}
 
-    function save_admin_options(){
-        global $current_user;
-        if ($current_user->ID > 0) {
-            $this->admin_options[$current_user->ID] = $this->user_options;
-        }
-        update_option('shared', $this->admin_options);
-    }
+		function save_admin_options(){
+				global $current_user;
+				if ($current_user->ID > 0) {
+						$this->admin_options[$current_user->ID] = $this->user_options;
+				}
+				update_option('shared', $this->admin_options);
+		}
 
 	function add_admin_pages(){
 		add_submenu_page('edit.php', __('Drafts for Friends', 'draftsforfriends'), __('Drafts for Friends', 'draftsforfriends'),
@@ -110,9 +110,9 @@ class DraftsForFriends	{
 
 	function get_drafts() {
 		global $current_user;
-		$my_drafts = get_users_drafts($current_user->ID);
+		$my_drafts = $this->get_users_drafts($current_user->ID);
 		$my_scheduled = $this->get_users_future($current_user->ID);
-		$pending = get_others_pending($current_user->ID);
+		$pending = $this->get_others_pending($current_user->ID);
 		$ds = array(
 			array(
 				__('Your Drafts:', 'draftsforfriends'),
@@ -132,6 +132,22 @@ class DraftsForFriends	{
 		);
 		return $ds; 
 	}
+
+	private function get_others_pending() {
+		return get_posts(array(
+	    'post_status' => array('draft', 'pending'),
+		));
+	}
+
+	private function get_users_drafts() {
+			global $wpdb;
+			global $current_user;
+
+    $query = $wpdb->prepare("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'draft' AND post_author = %d ORDER BY post_modified DESC", $current_user->ID);
+
+    $query = apply_filters( 'get_users_drafts', $query );
+    return $wpdb->get_results( $query );
+	}
 	
 	function get_users_future($user_id) {
 		global $wpdb;
@@ -144,13 +160,10 @@ class DraftsForFriends	{
 
 	function output_existing_menu_sub_admin_page(){
 		if (isset ($_POST['draftsforfriends_submit'])) {
-		// if ($_POST['draftsforfriends_submit']) {
 			$t = $this->process_post_options($_POST);
 
 		} elseif(isset($_POST['action']) && $_POST['action'] == 'extend'){
-		// } elseif ($_POST['action'] == 'extend') {
 			$t = $this->process_extend($_POST);
-		// } elseif ($_GET['action'] == 'delete') {
 		} elseif(isset( $_GET['action']) && $_GET['action'] == 'delete') {
 			$t = $this->process_delete($_GET);
 		}
@@ -258,7 +271,7 @@ class DraftsForFriends	{
 		foreach($shares as $share) {
 		if (   $share[ 'key'] == $_GET['draftsforfriends'] && $pid) {
 			return true;
-		  }
+			}
 		 }
 		}
 		return false;
