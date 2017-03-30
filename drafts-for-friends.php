@@ -23,7 +23,7 @@ class DraftsForFriends	{
 
 		$this->admin_options = $this->get_admin_options();
 
-		$this->user_options = ($current_user->id > 0 && isset($this->admin_options[$current_user->id]))? $this->admin_options[$current_user->id] : array();
+		$this->user_options = ($current_user->ID > 0 && isset($this->admin_options[$current_user->ID]))? $this->admin_options[$current_user->ID] : array();
 
 		$this->save_admin_options();
 
@@ -43,15 +43,15 @@ class DraftsForFriends	{
 
     function save_admin_options(){
         global $current_user;
-        if ($current_user->id > 0) {
-            $this->admin_options[$current_user->id] = $this->user_options;
+        if ($current_user->ID > 0) {
+            $this->admin_options[$current_user->ID] = $this->user_options;
         }
         update_option('shared', $this->admin_options);
     }
 
 	function add_admin_pages(){
-		add_submenu_page("edit.php", __('Drafts for Friends', 'draftsforfriends'), __('Drafts for Friends', 'draftsforfriends'),
-			1, __FILE__, array($this, 'output_existing_menu_sub_admin_page'));
+		add_submenu_page('edit.php', __('Drafts for Friends', 'draftsforfriends'), __('Drafts for Friends', 'draftsforfriends'),
+			'publish_posts', __FILE__, array($this, 'output_existing_menu_sub_admin_page'));
 	}
 
 	function calc($params) {
@@ -110,9 +110,9 @@ class DraftsForFriends	{
 
 	function get_drafts() {
 		global $current_user;
-		$my_drafts = get_users_drafts($current_user->id);
-		$my_scheduled = $this->get_users_future($current_user->id);
-		$pending = get_others_pending($current_user->id);
+		$my_drafts = get_users_drafts($current_user->ID);
+		$my_scheduled = $this->get_users_future($current_user->ID);
+		$pending = get_others_pending($current_user->ID);
 		$ds = array(
 			array(
 				__('Your Drafts:', 'draftsforfriends'),
