@@ -1,13 +1,12 @@
 <?php
 /*
-Plugin Name: WP-DraftsForFriends
-Plugin URI: http://github.com/siemiatj
-Description: Now you don't need to add friends as users to the blog in order to let them preview your drafts. Modified from Drafts for Friends originally by Neville Longbottom.
-Version: 0.0.1
-Author: Kuba 'sasklacz' Siemiatkowski
-Author URI: http://saskla.cz
-Text Domain: wp-draftsforfriends
-*/
+Plugin Name: Drafts for Friends
+Plugin URI: http://automattic.com/
+Description: Now you don't need to add friends as users to the blog in order to let them preview your drafts
+Author: Neville Longbottom
+Version: 2.2
+Author URI:
+*/ 
 
 class DraftsForFriends	{
 
