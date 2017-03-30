@@ -1,93 +1,99 @@
 <?php
 /*
-Plugin Name: WP-DraftsForFriends
+Plugin Name: DraftsForFriends
 Plugin URI: http://github.com/siemiatj
 Description: Now you don't need to add friends as users to the blog in order to let them preview your drafts. Modified from Drafts for Friends originally by Neville Longbottom.
 Version: 0.0.1
 Author: Kuba 'sasklacz' Siemiatkowski
 Author URI: http://saskla.cz
-Text Domain: wp-draftsforfriends
+Text Domain: draftsforfriends
 */
 
-class DraftsForFriends	{
+class Drafts_For_Friends	{
 
-	function __construct(){
-			add_action('init', array(&$this, 'init'));
+	public function __construct(){
+			add_action( 'init', array( &$this, 'init' ) );
 	}
 
-	function init() {
+	public function init() {
 		global $current_user;
-		add_action('admin_menu', array($this, 'add_admin_pages'));
-		add_filter('the_posts', array($this, 'the_posts_intercept'));
-		add_filter('posts_results', array($this, 'posts_results_intercept'));
+		add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
+		add_filter( 'the_posts', array( $this, 'the_posts_intercept' ) );
+		add_filter( 'posts_results', array( $this, 'posts_results_intercept' ));
 
 		$this->admin_options = $this->get_admin_options();
-
-		$this->user_options = ($current_user->ID > 0 && isset($this->admin_options[$current_user->ID]))? $this->admin_options[$current_user->ID] : array();
-
+		$this->user_options = ( $current_user->ID > 0 && isset( $this->admin_options[ $current_user->ID ] ) ) ?
+			$this->admin_options[ $current_user->ID ] : array();
 		$this->save_admin_options();
-
 		$this->admin_page_init();
 	}
 
-	function admin_page_init() {
-		wp_enqueue_script('jquery');
-		add_action('admin_head', array($this, 'print_admin_css'));
-		add_action('admin_head', array($this, 'print_admin_js'));
+	public function admin_page_init() {
+		wp_enqueue_script( 'jquery' );
+		add_action( 'admin_head', array( $this, 'print_admin_css' ) );
+		add_action( 'admin_head', array( $this, 'print_admin_js' ) );
 	}
 
-	function get_admin_options() {
-		$saved_options = get_option('shared');
-		return is_array($saved_options)? $saved_options : array();
+	private function get_admin_options() {
+		$saved_options = get_option( 'shared' );
+		return is_array( $saved_options ) ? $saved_options : array();
 	}
 
-		function save_admin_options(){
-				global $current_user;
-				if ($current_user->ID > 0) {
-						$this->admin_options[$current_user->ID] = $this->user_options;
-				}
-				update_option('shared', $this->admin_options);
+	private function save_admin_options(){
+		global $current_user;
+		if ( $current_user->ID > 0 ) {
+				$this->admin_options[ $current_user->ID ] = $this->user_options;
 		}
-
-	function add_admin_pages(){
-		add_submenu_page('edit.php', __('Drafts for Friends', 'draftsforfriends'), __('Drafts for Friends', 'draftsforfriends'),
-			'publish_posts', __FILE__, array($this, 'output_existing_menu_sub_admin_page'));
+		update_option( 'shared', $this->admin_options );
 	}
 
-	function calc($params) {
+	public function add_admin_pages(){
+		add_submenu_page( 'edit.php', __('Drafts for Friends', 'draftsforfriends'), __('Drafts for Friends', 'draftsforfriends'),
+			'publish_posts', __FILE__, array( $this, 'output_existing_menu_sub_admin_page' ) );
+	}
+
+	private function calc( $params ) {
 		$exp = 60;
 		$multiply = 60;
-		if (isset($params['expires']) && ($e = intval($params['expires']))) {
+		if ( isset( $params['expires'] ) && ( $e = intval( $params['expires'] ) ) ) {
 			$exp = $e;
 		}
-		$mults = array('s' => 1, 'm' => 60, 'h' => 3600, 'd' => 24*3600);
-		if ($params['measure'] && $mults[$params['measure']]) {
-			$multiply = $mults[$params['measure']];
+		$mults = array(
+			's' => 1,
+			'm' => 60,
+			'h' => 3600,
+			'd' => 24*3600
+		);
+		if ( $params['measure'] && $mults[ $params['measure'] ] ) {
+			$multiply = $mults[ $params['measure'] ];
 		}
 		return $exp * $multiply;
 	}
 
-	function process_post_options($params) {
+	private function process_post_options( $params ) {
 		global $current_user;
-		if ($params['post_id']) {
-			$p = get_post($params['post_id']);
-			if (!$p) {
+		if ( $params['post_id'] ) {
+			$p = get_post( $params['post_id'] );
+			if ( ! $p ) {
 				return __('There is no such post!', 'draftsforfriends');
 			}
-			if ('publish' == get_post_status($p)) {
+			if ( 'publish' == get_post_status( $p ) ) {
 				return __('The post is published!', 'draftsforfriends');
 			}
-			$this->user_options['shared'][] = array('id' => $p->ID,
-				'expires' => time() + $this->calc($params),
-				'key' => 'baba_' . wp_generate_password( 8 ) );
+			$this->user_options['shared'][] = array(
+				'id'      => $p->ID,
+				'expires' => time() + $this->calc( $params ),
+				'key'     => 'baba_' . wp_generate_password( 8 )
+			);
 			$this->save_admin_options();
 		}	
 	}
 
-	function process_delete($params) {
+	private function process_delete( $params ) {
 		$shared = array();
-		foreach($this->user_options['shared'] as $share) {
-			if ($share['key'] == $params['key']) {
+
+		foreach ( $this->user_options['shared'] as $share ) {
+			if ( $share['key'] == $params['key'] ) {
 				continue;
 			}
 			$shared[] = $share;	     
@@ -96,11 +102,12 @@ class DraftsForFriends	{
 		$this->save_admin_options();
 	}
 
-	function process_extend($params) {
+	private function process_extend( $params ) {
 		$shared = array();
-		foreach($this->user_options['shared'] as $share) {
-			if ($share['key'] == $params['key']) {
-				$share['expires'] += $this->calc($params);
+
+		foreach( $this->user_options['shared'] as $share ) {
+			if ( $share['key'] == $params['key'] ) {
+				$share['expires'] += $this->calc( $params );
 			}
 			$shared[] = $share;
 		}
@@ -108,25 +115,25 @@ class DraftsForFriends	{
 		$this->save_admin_options();
 	}
 
-	function get_drafts() {
+	private function get_drafts() {
 		global $current_user;
-		$my_drafts = $this->get_users_drafts($current_user->ID);
-		$my_scheduled = $this->get_users_future($current_user->ID);
-		$pending = $this->get_others_pending();
+		$my_drafts    = $this->get_users_drafts( $current_user->ID );
+		$my_scheduled = $this->get_users_future( $current_user->ID );
+		$pending      = $this->get_others_pending();
 		$ds = array(
 			array(
 				__('Your Drafts:', 'draftsforfriends'),
-				count($my_drafts),
+				count( $my_drafts ),
 				$my_drafts,
 			),
 			array(
 				__('Your Scheduled Posts:', 'draftsforfriends'),
-				count($my_scheduled),
+				count( $my_scheduled ),
 				$my_scheduled,
 			),
 			array(
 				__('Pending Review:', 'draftsforfriends'),
-				count($pending),
+				count( $pending ),
 				$pending,
 			),
 		);
@@ -134,12 +141,12 @@ class DraftsForFriends	{
 	}
 
 	private function get_others_pending() {
-		return get_posts(array(
-	    'post_status' => array('draft', 'pending'),
-		));
+		return get_posts( array(
+	    'post_status' => array( 'draft', 'pending' ),
+		) );
 	}
 
-	private function get_users_drafts($users_id) {
+	private function get_users_drafts( $user_id ) {
 		global $wpdb;
 
     $query = $wpdb->prepare("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'draft' AND post_author = %d ORDER BY post_modified DESC", $user_id);
@@ -148,34 +155,34 @@ class DraftsForFriends	{
     return $wpdb->get_results( $query );
 	}
 	
-	function get_users_future($user_id) {
+	private function get_users_future( $user_id ) {
 		global $wpdb;
 		return $wpdb->get_results("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'future' AND post_author = $user_id ORDER BY post_modified DESC");
 	}
 
-	function get_shared() {
-		if(isset($this->user_options['shared'])) {
+	private function get_shared() {
+		if ( isset( $this->user_options['shared'] ) ) {
 		  return $this->user_options['shared'];
 		}
 
 		return array();
 	}
 
-	private function output_existing_menu_sub_admin_page(){
+	public function output_existing_menu_sub_admin_page(){
 		$t = array();
 
-		if (isset ($_POST['draftsforfriends_submit'])) {
-			$t = $this->process_post_options($_POST);
-		} elseif(isset($_POST['action']) && $_POST['action'] == 'extend'){
-			$t = $this->process_extend($_POST);
-		} elseif(isset( $_GET['action']) && $_GET['action'] == 'delete') {
-			$t = $this->process_delete($_GET);
+		if ( isset ( $_POST['draftsforfriends_submit'] ) ) {
+			$t = $this->process_post_options( $_POST );
+		} elseif( isset( $_POST['action'] ) && 'extend' == $_POST['action'] ){
+			$t = $this->process_extend( $_POST );
+		} elseif( isset( $_GET['action'] ) && 'delete' == $_GET['action'] ) {
+			$t = $this->process_delete( $_GET );
 		}
 		$ds = $this->get_drafts();
 ?>
 	<div class="wrap">
 		<h2><?php _e('Drafts for Friends', 'draftsforfriends'); ?></h2>
-<?php 	if ($t):?>
+<?php 	if ( $t ) : ?>
 		<div id="message" class="updated fade"><?php echo $t; ?></div>
 <?php 	endif;?>
 		<h3><?php _e('Currently shared drafts', 'draftsforfriends'); ?></h3>
@@ -192,8 +199,8 @@ class DraftsForFriends	{
 <?php
 		$s = $this->get_shared();
 
-		foreach($s as $share):
-			$p = get_post($share['id']);
+		foreach ( $s as $share ) :
+			$p   = get_post( $share['id'] );
 			$url = get_bloginfo('url') . '/?p=' . $p->ID . '&draftsforfriends='. $share['key'];
 ?>
 			<tr>
@@ -221,12 +228,12 @@ class DraftsForFriends	{
 					</form>
 				</td>
 				<td class="actions">
-					<a class="delete" href="edit.php?page=<?php echo plugin_basename(__FILE__); ?>&amp;action=delete&amp;key=<?php echo $share['key']; ?>"><?php _e('Delete', 'draftsforfriends'); ?></a>
+					<a class="delete" href="edit.php?page=<?php echo plugin_basename( __FILE__ ); ?>&amp;action=delete&amp;key=<?php echo $share['key']; ?>"><?php _e('Delete', 'draftsforfriends'); ?></a>
 				</td>
 			</tr>
 <?php
 		endforeach;
-		if (empty($s)):
+		if ( empty( $s ) ) :
 ?>
 			<tr>
 				<td colspan="5"><?php _e('No shared drafts!', 'draftsforfriends'); ?></td>
@@ -242,16 +249,16 @@ class DraftsForFriends	{
 			<select id="draftsforfriends-postid" 	name="post_id">
 			<option value=""><?php _e('Choose a draft', 'draftsforfriends'); ?></option>
 <?php
-		foreach($ds as $dt):
-			if ($dt[1]):
+		foreach ( $ds as $dt ) :
+			if ( $dt[1] ):
 ?>
 			<option value="" disabled="disabled"></option>
 			<option value="" disabled="disabled"><?php echo $dt[0]; ?></option>
 <?php
-				foreach($dt[2] as $d):
-					if (empty($d->post_title)) continue;
+				foreach( $dt[2] as $d ) :
+					if ( empty( $d->post_title ) ) continue;
 ?>
-			<option value="<?php echo $d->ID?>"><?php echo wp_specialchars($d->post_title); ?></option>
+			<option value="<?php echo $d->ID?>"><?php echo wp_specialchars(  $d->post_title ); ?></option>
 <?php
 				endforeach;
 			endif;
@@ -270,42 +277,47 @@ class DraftsForFriends	{
 <?php
 	}
 
-	function can_view($pid) {
-		foreach($this->admin_options as $option) {
-		$shares = $option['shared'];
-		foreach($shares as $share) {
-		if (   $share[ 'key'] == $_GET['draftsforfriends'] && $pid) {
-			return true;
+	private function can_view( $pid ) {
+		foreach ( $this->admin_options as $option ) {
+			$shares = $option['shared'];
+
+			foreach ( $shares as $share) {
+				if ( $share[ 'key'] == $_GET['draftsforfriends'] && $pid ) {
+					return true;
+				}
 			}
-		 }
 		}
 		return false;
 	}
 
-	function posts_results_intercept($pp) {
-		if (1 != count($pp)) return $pp;
+	public function posts_results_intercept( $pp ) {
+		if ( 1 != count( $pp ) ) {
+			return $pp;
+		}
+
 		$p = $pp[0];
-		$status = get_post_status($p);
-		if ('publish' != $status && $this->can_view($p->ID)) {
+		$status = get_post_status( $p );
+		if ( 'publish' != $status && $this->can_view( $p->ID ) ) {
 			$this->shared_post = $p;
 		}
 		return $pp;
 	}
 
-	function the_posts_intercept($pp){
-		if (empty($pp) && !is_null($this->shared_post)) {
-			return array($this->shared_post);
-		} else {
-			$this->shared_post = null;
-			return $pp;
+	public function the_posts_intercept( $pp ){
+		if ( empty( $pp ) && ! is_null( $this->shared_post ) ) {
+			return array( $this->shared_post );
 		}
+
+		$this->shared_post = null;
+		return $pp;
 	}
 
-	function tmpl_measure_select() {
-		$secs = __('seconds', 'draftsforfriends');
-		$mins = __('minutes', 'draftsforfriends');
+	public function tmpl_measure_select() {
+		$secs  = __('seconds', 'draftsforfriends');
+		$mins  = __('minutes', 'draftsforfriends');
 		$hours = __('hours', 'draftsforfriends');
-		$days = __('days', 'draftsforfriends');
+		$days  = __('days', 'draftsforfriends');
+
 		return <<<SELECT
 			<input name="expires" type="text" value="2" size="4"/>
 			<select name="measure">
@@ -317,7 +329,7 @@ class DraftsForFriends	{
 SELECT;
 	}
 
-	function print_admin_css() {
+	public function print_admin_css() {
 ?>
 	<style type="text/css">
 		a.draftsforfriends-extend, a.draftsforfriends-extend-cancel { display: none; }
@@ -328,29 +340,29 @@ SELECT;
 <?php
 	}
 
-	function print_admin_js() {
+	public function print_admin_js() {
 ?>
 	<script type="text/javascript">
-	jQuery(function() {
-		jQuery('form.draftsforfriends-extend').hide();
-		jQuery('a.draftsforfriends-extend').show();
-		jQuery('a.draftsforfriends-extend-cancel').show();
-		jQuery('a.draftsforfriends-extend-cancel').css('display', 'inline');
-	});
-	window.draftsforfriends = {
-		toggle_extend: function(key) {
-			jQuery('#draftsforfriends-extend-form-'+key).show();
-			jQuery('#draftsforfriends-extend-link-'+key).hide();
-			jQuery('#draftsforfriends-extend-form-'+key+' input[name="expires"]').focus();
-		},
-		cancel_extend: function(key) {
-			jQuery('#draftsforfriends-extend-form-'+key).hide();
-			jQuery('#draftsforfriends-extend-link-'+key).show();
-		}
-	};
+		jQuery(function() {
+			jQuery('form.draftsforfriends-extend').hide();
+			jQuery('a.draftsforfriends-extend').show();
+			jQuery('a.draftsforfriends-extend-cancel').show();
+			jQuery('a.draftsforfriends-extend-cancel').css('display', 'inline');
+		});
+		window.draftsforfriends = {
+			toggle_extend: function(key) {
+				jQuery('#draftsforfriends-extend-form-'+key).show();
+				jQuery('#draftsforfriends-extend-link-'+key).hide();
+				jQuery('#draftsforfriends-extend-form-'+key+' input[name="expires"]').focus();
+			},
+			cancel_extend: function(key) {
+				jQuery('#draftsforfriends-extend-form-'+key).hide();
+				jQuery('#draftsforfriends-extend-link-'+key).show();
+			}
+		};
 	</script>
 <?php
 	}
 }
 
-new draftsforfriends();
+new Drafts_For_Friends();
