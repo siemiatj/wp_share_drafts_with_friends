@@ -112,7 +112,7 @@ class DraftsForFriends	{
 		global $current_user;
 		$my_drafts = $this->get_users_drafts($current_user->ID);
 		$my_scheduled = $this->get_users_future($current_user->ID);
-		$pending = $this->get_others_pending($current_user->ID);
+		$pending = $this->get_others_pending();
 		$ds = array(
 			array(
 				__('Your Drafts:', 'draftsforfriends'),
@@ -139,11 +139,10 @@ class DraftsForFriends	{
 		));
 	}
 
-	private function get_users_drafts() {
-			global $wpdb;
-			global $current_user;
+	private function get_users_drafts($users_id) {
+		global $wpdb;
 
-    $query = $wpdb->prepare("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'draft' AND post_author = %d ORDER BY post_modified DESC", $current_user->ID);
+    $query = $wpdb->prepare("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'draft' AND post_author = %d ORDER BY post_modified DESC", $user_id);
 
     $query = apply_filters( 'get_users_drafts', $query );
     return $wpdb->get_results( $query );
@@ -155,13 +154,18 @@ class DraftsForFriends	{
 	}
 
 	function get_shared() {
-		return $this->user_options['shared'];
+		if(isset($this->user_options['shared'])) {
+		  return $this->user_options['shared'];
+		}
+
+		return array();
 	}
 
-	function output_existing_menu_sub_admin_page(){
+	private function output_existing_menu_sub_admin_page(){
+		$t = array();
+
 		if (isset ($_POST['draftsforfriends_submit'])) {
 			$t = $this->process_post_options($_POST);
-
 		} elseif(isset($_POST['action']) && $_POST['action'] == 'extend'){
 			$t = $this->process_extend($_POST);
 		} elseif(isset( $_GET['action']) && $_GET['action'] == 'delete') {
@@ -187,6 +191,7 @@ class DraftsForFriends	{
 			<tbody>
 <?php
 		$s = $this->get_shared();
+
 		foreach($s as $share):
 			$p = get_post($share['id']);
 			$url = get_bloginfo('url') . '/?p=' . $p->ID . '&draftsforfriends='. $share['key'];
