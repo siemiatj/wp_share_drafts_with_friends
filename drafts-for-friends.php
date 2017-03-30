@@ -143,11 +143,15 @@ class DraftsForFriends	{
 	}
 
 	function output_existing_menu_sub_admin_page(){
-		if ($_POST['draftsforfriends_submit']) {
+		if (isset ($_POST['draftsforfriends_submit'])) {
+		// if ($_POST['draftsforfriends_submit']) {
 			$t = $this->process_post_options($_POST);
-		} elseif ($_POST['action'] == 'extend') {
+
+		} elseif(isset($_POST['action']) && $_POST['action'] == 'extend'){
+		// } elseif ($_POST['action'] == 'extend') {
 			$t = $this->process_extend($_POST);
-		} elseif ($_GET['action'] == 'delete') {
+		// } elseif ($_GET['action'] == 'delete') {
+		} elseif(isset( $_GET['action']) && $_GET['action'] == 'delete') {
 			$t = $this->process_delete($_GET);
 		}
 		$ds = $this->get_drafts();
