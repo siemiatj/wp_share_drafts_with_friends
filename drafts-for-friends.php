@@ -33,7 +33,6 @@ class Drafts_For_Friends	{
 
 	public function admin_page_init() {
 		wp_enqueue_script( 'jquery' );
-		add_action( 'admin_head', array( $this, 'print_admin_css' ) );
 		add_action('admin_head', array($this, 'enqueue_scripts'));
 	}
 
@@ -345,19 +344,6 @@ class Drafts_For_Friends	{
 			<option value="h" selected="selected"><?php echo $hours ?></option>
 			<option value="d"><?php echo $days ?></option>
 		</select>
-<?php
-	}
-
-	public function print_admin_css() {
-?>
-
-	<style type="text/css">
-		a.draftsforfriends-extend, a.draftsforfriends-extend-cancel { display: none; }
-		form.draftsforfriends-extend { white-space: nowrap; }
-		form.draftsforfriends-extend, form.draftsforfriends-extend input, form.draftsforfriends-extend select { font-size: 11px; }
-		th.actions, td.actions { text-align: center; }
-	</style>
-
 <?php
 	}
 }

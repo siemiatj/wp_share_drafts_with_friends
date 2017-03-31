@@ -21,10 +21,14 @@ const config = {
         include: path.join(__dirname, 'app'),
         exclude: path.join(__dirname, '/node_modules/'),
       },
+      {
+        test: /\.css$/,
+        loaders: ['style-loader', 'css-loader']
+      },
     ]
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.css'],
     modules: [
       'app', 'node_modules'
     ],
