@@ -53,10 +53,10 @@ class Drafts_For_Friends	{
 	}
 
 	private function calc( $params ) {
-		$exp = 60;
+		$expires = 60;
 		$multiply = 60;
 		if ( isset( $params['expires'] ) && ( $e = intval( $params['expires'] ) ) ) {
-			$exp = $e;
+			$expires = $e;
 		}
 		$mults = array(
 			's' => 1,
@@ -67,21 +67,21 @@ class Drafts_For_Friends	{
 		if ( $params['measure'] && $mults[ $params['measure'] ] ) {
 			$multiply = $mults[ $params['measure'] ];
 		}
-		return $exp * $multiply;
+		return $expires * $multiply;
 	}
 
 	private function process_post_options( $params ) {
 		global $current_user;
 		if ( $params['post_id'] ) {
-			$p = get_post( $params['post_id'] );
-			if ( ! $p ) {
+			$post = get_post( $params['post_id'] );
+			if ( ! $post ) {
 				return __('There is no such post!', 'draftsforfriends');
 			}
-			if ( 'publish' == get_post_status( $p ) ) {
+			if ( 'publish' == get_post_status( $post ) ) {
 				return __('The post is published!', 'draftsforfriends');
 			}
 			$this->user_options['shared'][] = array(
-				'id'      => $p->ID,
+				'id'      => $post->ID,
 				'expires' => time() + $this->calc( $params ),
 				'key'     => 'baba_' . wp_generate_password( 8 )
 			);
@@ -120,7 +120,7 @@ class Drafts_For_Friends	{
 		$my_drafts    = $this->get_users_drafts( $current_user->ID );
 		$my_scheduled = $this->get_users_future( $current_user->ID );
 		$pending      = $this->get_others_pending();
-		$ds = array(
+		$drafts = array(
 			array(
 				__('Your Drafts:', 'draftsforfriends'),
 				count( $my_drafts ),
@@ -137,7 +137,7 @@ class Drafts_For_Friends	{
 				$pending,
 			),
 		);
-		return $ds; 
+		return $drafts;
 	}
 
 	private function get_others_pending() {
@@ -169,22 +169,22 @@ class Drafts_For_Friends	{
 	}
 
 	public function output_existing_menu_sub_admin_page(){
-		$t = array();
+		$result = array();
 
 		if ( isset ( $_POST['draftsforfriends_submit'] ) ) {
-			$t = $this->process_post_options( $_POST );
+			$result = $this->process_post_options( $_POST );
 		} elseif( isset( $_POST['action'] ) && 'extend' == $_POST['action'] ){
-			$t = $this->process_extend( $_POST );
+			$result = $this->process_extend( $_POST );
 		} elseif( isset( $_GET['action'] ) && 'delete' == $_GET['action'] ) {
-			$t = $this->process_delete( $_GET );
+			$result = $this->process_delete( $_GET );
 		}
-		$ds = $this->get_drafts();
+		$drafts = $this->get_drafts();
 ?>
 	<div class="wrap">
 		<h2><?php _e('Drafts for Friends', 'draftsforfriends'); ?></h2>
-<?php 	if ( $t ) : ?>
-		<div id="message" class="updated fade"><?php echo $t; ?></div>
-<?php 	endif;?>
+		<?php if ( $result ) : ?>
+			<div id="message" class="updated fade"><?php echo $result; ?></div>
+		<?php endif; ?>
 		<h3><?php _e('Currently shared drafts', 'draftsforfriends'); ?></h3>
 		<table class="widefat">
 			<thead>
@@ -196,93 +196,94 @@ class Drafts_For_Friends	{
 			</tr>
 			</thead>
 			<tbody>
-<?php
-		$s = $this->get_shared();
+				<?php
+					$shared = $this->get_shared();
 
-		foreach ( $s as $share ) :
-			$p   = get_post( $share['id'] );
-			$url = get_bloginfo('url') . '/?p=' . $p->ID . '&draftsforfriends='. $share['key'];
-?>
-			<tr>
-				<td><?php echo $p->ID; ?></td>
-				<td><?php echo $p->post_title; ?></td>
-				<!-- TODO: make the draft link selecatble -->
-				<td><a href="<?php echo $url; ?>"><?php echo esc_html( $url ); ?></a></td>
-				<td class="actions">
-					<a class="draftsforfriends-extend edit" id="draftsforfriends-extend-link-<?php echo $share['key']; ?>"
-						href="javascript:draftsforfriends.toggle_extend('<?php echo $share['key']; ?>');">
-							<?php _e('Extend', 'draftsforfriends'); ?>
-					</a>
-					<form class="draftsforfriends-extend" id="draftsforfriends-extend-form-<?php echo $share['key']; ?>"
-						action="" method="post">	
-						<input type="hidden" name="action" value="extend" />
-						<input type="hidden" name="key" value="<?php echo $share['key']; ?>" />
-						<input type="submit" class="button" name="draftsforfriends_extend_submit"
-							value="<?php _e('Extend', 'draftsforfriends'); ?>"/>
-<?php _e('by', 'draftsforfriends');?>
-<?php echo $this->tmpl_measure_select(); ?>				
-						<a class="draftsforfriends-extend-cancel"
-							href="javascript:draftsforfriends.cancel_extend('<?php echo $share['key']; ?>');">
-							<?php _e('Cancel', 'draftsforfriends'); ?>
-						</a>
-					</form>
-				</td>
-				<td class="actions">
-					<a class="delete" href="edit.php?page=<?php echo plugin_basename( __FILE__ ); ?>&amp;action=delete&amp;key=<?php echo $share['key']; ?>"><?php _e('Delete', 'draftsforfriends'); ?></a>
-				</td>
-			</tr>
-<?php
-		endforeach;
-		if ( empty( $s ) ) :
-?>
-			<tr>
-				<td colspan="5"><?php _e('No shared drafts!', 'draftsforfriends'); ?></td>
-			</tr>
-<?php
-		endif;
-?>
+					foreach ( $shared as $share ) :
+						$post   = get_post( $share['id'] );
+						$url = get_bloginfo('url') . '/?p=' . $post->ID . '&draftsforfriends='. $share['key'];
+				?>
+					<tr>
+						<td><?php echo $post->ID; ?></td>
+						<td><?php echo $post->post_title; ?></td>
+						<!-- TODO: make the draft link selecatble -->
+						<td><a href="<?php echo $url; ?>"><?php echo esc_html( $url ); ?></a></td>
+						<td class="actions">
+							<a class="draftsforfriends-extend edit" id="draftsforfriends-extend-link-<?php echo $share['key']; ?>"
+								href="javascript:draftsforfriends.toggle_extend('<?php echo $share['key']; ?>');">
+									<?php _e('Extend', 'draftsforfriends'); ?>
+							</a>
+							<form
+								class="draftsforfriends-extend"
+								id="draftsforfriends-extend-form-<?php echo $share['key']; ?>"
+								action="" method="post"
+							>
+								<input type="hidden" name="action" value="extend" />
+								<input type="hidden" name="key" value="<?php echo $share['key']; ?>" />
+								<input type="submit" class="button" name="draftsforfriends_extend_submit"
+									value="<?php _e('Extend', 'draftsforfriends'); ?>"/>
+								<?php _e('by', 'draftsforfriends');?>
+								<?php echo $this->tmpl_measure_select(); ?>
+								<a class="draftsforfriends-extend-cancel"
+									href="javascript:draftsforfriends.cancel_extend('<?php echo $share['key']; ?>');">
+									<?php _e('Cancel', 'draftsforfriends'); ?>
+								</a>
+						</form>
+					</td>
+					<td class="actions">
+						<a
+							class="delete"
+							href="edit.php?page=<?php echo plugin_basename( __FILE__ ); ?>&amp;action=delete&amp;key=<?php echo $share['key']; ?>"
+						><?php _e('Delete', 'draftsforfriends'); ?></a>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+				<?php if ( empty( $shared ) ) : ?>
+					<tr>
+						<td colspan="5"><?php _e('No shared drafts!', 'draftsforfriends'); ?></td>
+					</tr>
+				<?php endif; ?>
 			</tbody>
 		</table>
 		<h3><?php _e('Drafts for Friends', 'draftsforfriends'); ?></h3>
-		<form id="draftsforfriends-share" action=""            method="post">
-		<p>
-			<select id="draftsforfriends-postid" 	name="post_id">
-			<option value=""><?php _e('Choose a draft', 'draftsforfriends'); ?></option>
-<?php
-		foreach ( $ds as $dt ) :
-			if ( $dt[1] ):
-?>
-			<option value="" disabled="disabled"></option>
-			<option value="" disabled="disabled"><?php echo $dt[0]; ?></option>
-<?php
-				foreach( $dt[2] as $d ) :
-					if ( empty( $d->post_title ) ) continue;
-?>
-			<option value="<?php echo $d->ID?>"><?php echo wp_specialchars(  $d->post_title ); ?></option>
-<?php
-				endforeach;
-			endif;
-		endforeach;
-?>
-			</select>
-		</p>
-		<p>
-			<input type="submit" class="button" name="draftsforfriends_submit"
-				value="<?php _e('Share it', 'draftsforfriends'); ?>" />
-			<?php _e('for', 'draftsforfriends'); ?>
-			<?php echo $this->tmpl_measure_select(); ?>.
-		</p>
+		<form id="draftsforfriends-share" action="" method="post">
+			<p>
+				<select id="draftsforfriends-postid" 	name="post_id">
+				<option value=""><?php _e('Choose a draft', 'draftsforfriends'); ?></option>
+          <?php foreach ( $drafts as $draft ): ?>
+            <?php if ( $draft[1] ): ?>
+							<option value="" disabled="disabled"></option>
+							<option value="" disabled="disabled"><?php echo $draft[0]; ?></option>
+							<?php foreach( $draft[2] as $draft_post ) : ?>
+								<?php if ( empty( $draft_post->post_title ) ) continue; ?>
+									<option value="<?php echo $draft_post->ID?>"><?php echo wp_specialchars(  $draft_post->post_title ); ?></option>
+							<?php endforeach; ?>
+            <?php endif; ?>
+          <?php endforeach; ?>
+				</select>
+			</p>
+			<p>
+				<input
+					type="submit"
+					class="button"
+					name="draftsforfriends_submit"
+					value="<?php _e('Share it', 'draftsforfriends'); ?>"
+				/>
+				<?php _e('for', 'draftsforfriends'); ?>
+				<?php echo $this->tmpl_measure_select(); ?>.
+			</p>
 		</form>
-		</div>
+	</div>
+
 <?php
 	}
 
-	private function can_view( $pid ) {
+	private function can_view( $post_id ) {
 		foreach ( $this->admin_options as $option ) {
 			$shares = $option['shared'];
 
 			foreach ( $shares as $share) {
-				if ( $share[ 'key'] == $_GET['draftsforfriends'] && $pid ) {
+				if ( $share[ 'key'] == $_GET['draftsforfriends'] && $post_id ) {
 					return true;
 				}
 			}
@@ -290,26 +291,26 @@ class Drafts_For_Friends	{
 		return false;
 	}
 
-	public function posts_results_intercept( $pp ) {
-		if ( 1 != count( $pp ) ) {
-			return $pp;
+	public function posts_results_intercept( $posts ) {
+		if ( 1 != count( $posts ) ) {
+			return $posts;
 		}
 
-		$p = $pp[0];
-		$status = get_post_status( $p );
-		if ( 'publish' != $status && $this->can_view( $p->ID ) ) {
-			$this->shared_post = $p;
+		$post = $posts[0];
+		$status = get_post_status( $post );
+		if ( 'publish' != $status && $this->can_view( $post->ID ) ) {
+			$this->shared_post = $post;
 		}
-		return $pp;
+		return $posts;
 	}
 
-	public function the_posts_intercept( $pp ){
-		if ( empty( $pp ) && ! is_null( $this->shared_post ) ) {
+	public function the_posts_intercept( $posts ){
+		if ( empty( $posts ) && ! is_null( $this->shared_post ) ) {
 			return array( $this->shared_post );
 		}
 
 		$this->shared_post = null;
-		return $pp;
+		return $posts;
 	}
 
 	public function tmpl_measure_select() {
@@ -318,29 +319,31 @@ class Drafts_For_Friends	{
 		$hours = __('hours', 'draftsforfriends');
 		$days  = __('days', 'draftsforfriends');
 
-		return <<<SELECT
-			<input name="expires" type="text" value="2" size="4"/>
-			<select name="measure">
-				<option value="s">$secs</option>
-				<option value="m">$mins</option>
-				<option value="h" selected="selected">$hours</option>
-				<option value="d">$days</option>
-			</select>
+	return <<<SELECT
+		<input name="expires" type="text" value="2" size="4"/>
+		<select name="measure">
+			<option value="s">$secs</option>
+			<option value="m">$mins</option>
+			<option value="h" selected="selected">$hours</option>
+			<option value="d">$days</option>
+		</select>
 SELECT;
-	}
+		}
 
 	public function print_admin_css() {
 ?>
+
 	<style type="text/css">
 		a.draftsforfriends-extend, a.draftsforfriends-extend-cancel { display: none; }
 		form.draftsforfriends-extend { white-space: nowrap; }
 		form.draftsforfriends-extend, form.draftsforfriends-extend input, form.draftsforfriends-extend select { font-size: 11px; }
 		th.actions, td.actions { text-align: center; }
 	</style>
-<?php
-	}
 
-	public function print_admin_js() {
+<?php
+		}
+
+		public function print_admin_js() {
 ?>
 	<script type="text/javascript">
 		jQuery(function() {
@@ -361,6 +364,7 @@ SELECT;
 			}
 		};
 	</script>
+
 <?php
 	}
 }
