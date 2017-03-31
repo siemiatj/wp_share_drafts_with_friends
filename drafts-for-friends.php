@@ -83,7 +83,7 @@ class Drafts_For_Friends	{
 			$this->user_options['shared'][] = array(
 				'id'      => $post->ID,
 				'expires' => time() + $this->calc( $params ),
-				'key'     => 'baba_' . wp_generate_password( 8 )
+				'key'     => 'baba_' . wp_generate_password( 8, false )
 			);
 			$this->save_admin_options();
 		}	
@@ -96,7 +96,7 @@ class Drafts_For_Friends	{
 			if ( $share['key'] == $params['key'] ) {
 				continue;
 			}
-			$shared[] = $share;	     
+			$shared[] = $share;
 		}
 		$this->user_options['shared'] = $shared;
 		$this->save_admin_options();
@@ -142,17 +142,17 @@ class Drafts_For_Friends	{
 
 	private function get_others_pending() {
 		return get_posts( array(
-	    'post_status' => array( 'draft', 'pending' ),
+			'post_status' => array( 'draft', 'pending' ),
 		) );
 	}
 
 	private function get_users_drafts( $user_id ) {
 		global $wpdb;
 
-    $query = $wpdb->prepare("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'draft' AND post_author = %d ORDER BY post_modified DESC", $user_id);
+		$query = $wpdb->prepare("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'draft' AND post_author = %d ORDER BY post_modified DESC", $user_id);
 
-    $query = apply_filters( 'get_users_drafts', $query );
-    return $wpdb->get_results( $query );
+		$query = apply_filters( 'get_users_drafts', $query );
+		return $wpdb->get_results( $query );
 	}
 	
 	private function get_users_future( $user_id ) {
@@ -162,7 +162,7 @@ class Drafts_For_Friends	{
 
 	private function get_shared() {
 		if ( isset( $this->user_options['shared'] ) ) {
-		  return $this->user_options['shared'];
+			return $this->user_options['shared'];
 		}
 
 		return array();
@@ -250,16 +250,16 @@ class Drafts_For_Friends	{
 			<p>
 				<select id="draftsforfriends-postid" 	name="post_id">
 				<option value=""><?php _e('Choose a draft', 'draftsforfriends'); ?></option>
-          <?php foreach ( $drafts as $draft ): ?>
-            <?php if ( $draft[1] ): ?>
+					<?php foreach ( $drafts as $draft ): ?>
+						<?php if ( $draft[1] ): ?>
 							<option value="" disabled="disabled"></option>
 							<option value="" disabled="disabled"><?php echo $draft[0]; ?></option>
 							<?php foreach( $draft[2] as $draft_post ) : ?>
 								<?php if ( empty( $draft_post->post_title ) ) continue; ?>
 									<option value="<?php echo $draft_post->ID?>"><?php echo wp_specialchars(  $draft_post->post_title ); ?></option>
 							<?php endforeach; ?>
-            <?php endif; ?>
-          <?php endforeach; ?>
+						<?php endif; ?>
+					<?php endforeach; ?>
 				</select>
 			</p>
 			<p>
@@ -305,7 +305,7 @@ class Drafts_For_Friends	{
 	}
 
 	public function the_posts_intercept( $posts ){
-		if ( empty( $posts ) && ! is_null( $this->shared_post ) ) {
+		if ( empty( $posts ) && ( ! empty( $this->shared_post ) ) && ! is_null( $this->shared_post ) ) {
 			return array( $this->shared_post );
 		}
 
