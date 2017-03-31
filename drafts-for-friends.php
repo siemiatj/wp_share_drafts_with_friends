@@ -17,6 +17,9 @@ class Drafts_For_Friends	{
 
 	public function init() {
 		global $current_user;
+
+		define('ASSETS_PATH',  plugins_url( '/', __FILE__ ) );
+
 		add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
 		add_filter( 'the_posts', array( $this, 'the_posts_intercept' ) );
 		add_filter( 'posts_results', array( $this, 'posts_results_intercept' ));
@@ -31,7 +34,12 @@ class Drafts_For_Friends	{
 	public function admin_page_init() {
 		wp_enqueue_script( 'jquery' );
 		add_action( 'admin_head', array( $this, 'print_admin_css' ) );
-		add_action( 'admin_head', array( $this, 'print_admin_js' ) );
+		add_action('admin_head', array($this, 'enqueue_scripts'));
+	}
+
+	public function enqueue_scripts() {
+		wp_enqueue_script( 'bundle', ASSETS_PATH . 'build/bundle.js', array() );
+		wp_enqueue_script( 'jquery-handle-table', ASSETS_PATH . 'build/handle_table.js', array() );
 	}
 
 	private function get_admin_options() {
@@ -349,31 +357,6 @@ class Drafts_For_Friends	{
 		form.draftsforfriends-extend, form.draftsforfriends-extend input, form.draftsforfriends-extend select { font-size: 11px; }
 		th.actions, td.actions { text-align: center; }
 	</style>
-
-<?php
-		}
-
-		public function print_admin_js() {
-?>
-	<script type="text/javascript">
-		jQuery(function() {
-			jQuery('form.draftsforfriends-extend').hide();
-			jQuery('a.draftsforfriends-extend').show();
-			jQuery('a.draftsforfriends-extend-cancel').show();
-			jQuery('a.draftsforfriends-extend-cancel').css('display', 'inline');
-		});
-		window.draftsforfriends = {
-			toggle_extend: function(key) {
-				jQuery('#draftsforfriends-extend-form-'+key).show();
-				jQuery('#draftsforfriends-extend-link-'+key).hide();
-				jQuery('#draftsforfriends-extend-form-'+key+' input[name="expires"]').focus();
-			},
-			cancel_extend: function(key) {
-				jQuery('#draftsforfriends-extend-form-'+key).hide();
-				jQuery('#draftsforfriends-extend-link-'+key).show();
-			}
-		};
-	</script>
 
 <?php
 	}
