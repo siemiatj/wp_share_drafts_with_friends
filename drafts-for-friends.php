@@ -186,28 +186,68 @@ class Drafts_For_Friends	{
 			<div id="message" class="updated fade"><?php echo $result; ?></div>
 		<?php endif; ?>
 		<h3><?php _e('Currently shared drafts', 'draftsforfriends'); ?></h3>
+
+		<?php $this->render_drafts_table(); ?>
+
+		<h3><?php _e('Share Drafts', 'draftsforfriends'); ?></h3>
+		<form id="draftsforfriends-share" action="" method="post">
+			<p>
+				<select id="draftsforfriends-postid" 	name="post_id">
+				<option value=""><?php _e('Choose a draft', 'draftsforfriends'); ?></option>
+					<?php foreach ( $drafts as $draft ): ?>
+						<?php if ( $draft[1] ): ?>
+							<option value="" disabled="disabled"></option>
+							<option value="" disabled="disabled"><?php echo $draft[0]; ?></option>
+							<?php foreach( $draft[2] as $draft_post ) : ?>
+								<?php if ( empty( $draft_post->post_title ) ) continue; ?>
+									<option value="<?php echo $draft_post->ID?>"><?php echo esc_html(  $draft_post->post_title ); ?></option>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</select>
+			</p>
+			<p>
+				<input
+					type="submit"
+					class="button"
+					name="draftsforfriends_submit"
+					value="<?php _e('Share it', 'draftsforfriends'); ?>"
+				/>
+				<?php _e('for', 'draftsforfriends'); ?>
+				<?php $this->tmpl_measure_select(); ?>.
+			</p>
+		</form>
+	</div>
+
+<?php
+	}
+
+	private function render_drafts_table() {
+		$shared = $this->get_shared();
+?>
 		<table class="widefat">
 			<thead>
-			<tr>
-				<th><?php _e('ID', 'draftsforfriends'); ?></th>
-				<th><?php _e('Title', 'draftsforfriends'); ?></th>
-				<th><?php _e('Link', 'draftsforfriends'); ?></th>
-				<th colspan="2" class="actions"><?php _e('Actions', 'draftsforfriends'); ?></th>
-			</tr>
+				<tr>
+					<th><?php _e('ID', 'draftsforfriends'); ?></th>
+					<th><?php _e('Title', 'draftsforfriends'); ?></th>
+					<th><?php _e('Link', 'draftsforfriends'); ?></th>
+					<th><?php _e('Expires', 'draftsforfriends'); ?></th>
+					<th colspan="2" class="actions"><?php _e('Actions', 'draftsforfriends'); ?></th>
+				</tr>
 			</thead>
 			<tbody>
 				<?php
-					$shared = $this->get_shared();
-
 					foreach ( $shared as $share ) :
-						$post   = get_post( $share['id'] );
-						$url = get_bloginfo('url') . '/?p=' . $post->ID . '&draftsforfriends='. $share['key'];
+						$expires = $share['expires'];
+						$post    = get_post( $share['id'] );
+						$url     = get_bloginfo('url') . '/?p=' . $post->ID . '&draftsforfriends='. $share['key'];
 				?>
 					<tr>
 						<td><?php echo $post->ID; ?></td>
 						<td><?php echo $post->post_title; ?></td>
 						<!-- TODO: make the draft link selecatble -->
 						<td><a href="<?php echo $url; ?>"><?php echo esc_html( $url ); ?></a></td>
+						<td><?php echo $expires ?></td>
 						<td class="actions">
 							<a class="draftsforfriends-extend edit" id="draftsforfriends-extend-link-<?php echo $share['key']; ?>"
 								href="javascript:draftsforfriends.toggle_extend('<?php echo $share['key']; ?>');">
@@ -223,7 +263,7 @@ class Drafts_For_Friends	{
 								<input type="submit" class="button" name="draftsforfriends_extend_submit"
 									value="<?php _e('Extend', 'draftsforfriends'); ?>"/>
 								<?php _e('by', 'draftsforfriends');?>
-								<?php echo $this->tmpl_measure_select(); ?>
+								<?php $this->tmpl_measure_select(); ?>
 								<a class="draftsforfriends-extend-cancel"
 									href="javascript:draftsforfriends.cancel_extend('<?php echo $share['key']; ?>');">
 									<?php _e('Cancel', 'draftsforfriends'); ?>
@@ -245,36 +285,6 @@ class Drafts_For_Friends	{
 				<?php endif; ?>
 			</tbody>
 		</table>
-		<h3><?php _e('Drafts for Friends', 'draftsforfriends'); ?></h3>
-		<form id="draftsforfriends-share" action="" method="post">
-			<p>
-				<select id="draftsforfriends-postid" 	name="post_id">
-				<option value=""><?php _e('Choose a draft', 'draftsforfriends'); ?></option>
-					<?php foreach ( $drafts as $draft ): ?>
-						<?php if ( $draft[1] ): ?>
-							<option value="" disabled="disabled"></option>
-							<option value="" disabled="disabled"><?php echo $draft[0]; ?></option>
-							<?php foreach( $draft[2] as $draft_post ) : ?>
-								<?php if ( empty( $draft_post->post_title ) ) continue; ?>
-									<option value="<?php echo $draft_post->ID?>"><?php echo wp_specialchars(  $draft_post->post_title ); ?></option>
-							<?php endforeach; ?>
-						<?php endif; ?>
-					<?php endforeach; ?>
-				</select>
-			</p>
-			<p>
-				<input
-					type="submit"
-					class="button"
-					name="draftsforfriends_submit"
-					value="<?php _e('Share it', 'draftsforfriends'); ?>"
-				/>
-				<?php _e('for', 'draftsforfriends'); ?>
-				<?php echo $this->tmpl_measure_select(); ?>.
-			</p>
-		</form>
-	</div>
-
 <?php
 	}
 
@@ -313,22 +323,22 @@ class Drafts_For_Friends	{
 		return $posts;
 	}
 
-	public function tmpl_measure_select() {
+	private function tmpl_measure_select() {
 		$secs  = __('seconds', 'draftsforfriends');
 		$mins  = __('minutes', 'draftsforfriends');
 		$hours = __('hours', 'draftsforfriends');
 		$days  = __('days', 'draftsforfriends');
 
-	return <<<SELECT
+?>
 		<input name="expires" type="text" value="2" size="4"/>
 		<select name="measure">
-			<option value="s">$secs</option>
-			<option value="m">$mins</option>
-			<option value="h" selected="selected">$hours</option>
-			<option value="d">$days</option>
+			<option value="s"><?php echo $secs ?></option>
+			<option value="m"><?php echo $mins ?></option>
+			<option value="h" selected="selected"><?php echo $hours ?></option>
+			<option value="d"><?php echo $days ?></option>
 		</select>
-SELECT;
-		}
+<?php
+	}
 
 	public function print_admin_css() {
 ?>
