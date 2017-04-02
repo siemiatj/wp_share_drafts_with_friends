@@ -1,5 +1,5 @@
 {
-  "extends": "airbnb",
+  "extends": "wpcalypso/react-a11y",
   "env": {
     "browser": true,
   },
@@ -13,30 +13,7 @@
     },
   },
   "plugins": [
-    "react"
+    "wpcalypso"
   ],
-  "rules": {
-    "no-case-declarations": 0,
-    "react/sort-comp": 1,
-    "react/jsx-no-undef": 2,
-    "react/wrap-multilines": 2,
-    "react/jsx-uses-react": 2,
-    "react/jsx-uses-vars": 2,
-    "react/react-in-jsx-scope": 2,
-    "react/require-default-props": 0,
-    "react/jsx-boolean-value": [1, "always"],
-    "react/forbid-prop-types": 1,
-    "react/prop-types": 1,
-    "react/jsx-first-prop-new-line": 1,
-    "jsx-a11y/no-static-element-interactions": 1,
-    "semi": ["warn", "always"],
-    "no-class-assign": 1,
-    "class-methods-use-this": 0,
-    "prefer-const": ["warn", {"ignoreReadBeforeAssign": true}],
-    "comma-dangle": ["error", "only-multiline"],
-    "arrow-body-style": ["warn", "as-needed"],
-    "max-len": 1,
-    "camelcase": 0,
-  }
 }
 
