@@ -1,8 +1,8 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require( 'path' );
+const webpack = require( 'webpack' );
 
 const config = {
-	devtool: 'eval-source-map',
+	devtool: 'source-map',
 	name: 'browser',
 	entry: {
 		app: './app/index',
@@ -17,20 +17,20 @@ const config = {
 				test: /\.js$|\.jsx$/,
 				loader: 'babel-loader',
 				query: {
-					presets: ['es2015', 'react', 'stage-0'],
-					plugins: ['transform-object-rest-spread'],
+					presets: [ 'es2015', 'react', 'stage-0' ],
+					plugins: [ 'transform-object-rest-spread' ],
 				},
 				include: path.join( __dirname, 'app' ),
 				exclude: path.join( __dirname, '/node_modules/' ),
 			},
 			{
 				test: /\.css$/,
-				loaders: ['style-loader', 'css-loader']
+				loaders: [ 'style-loader', 'css-loader' ]
 			},
 		]
 	},
 	resolve: {
-		extensions: ['.js', '.jsx', '.css'],
+		extensions: [ '.js', '.jsx', '.css' ],
 		modules: [
 			'app', 'node_modules'
 		],
