@@ -9,9 +9,14 @@
     "build:prod": "NODE_ENV=production webpack -p --config ./webpack.config.js"
   },
   "dependencies": {
+    "axios": "^0.16.0",
     "classnames": "^2.2.5",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.3",
+    "redux": "^3.6.0",
+    "redux-promise": "^0.5.3",
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.24.0",
@@ -25,6 +30,7 @@
     "eslint-config-wpcalypso": "^0.7.1",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-wpcalypso": "^3.0.2",
+    "redux-logger": "^3.0.1",
     "style-loader": "^0.16.1",
     "webpack": "^2.3.2"
   }
