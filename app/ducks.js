@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import request from 'axios';
 
 /* ENTRY ACTIONS
 ================================================================================================ */
@@ -49,8 +50,31 @@ export default reducer;
 
 /* ACTION CREATORS
 ================================================================================================ */
+const getDraftsSuccess = ( data ) => (
+	{
+		type: FETCH_DRAFTS_FAILURE,
+		payload: data,
+	}
+);
+
+const getDraftsFailure = ( error ) => (
+	{
+		type: FETCH_DRAFTS_FAILURE,
+		payload: null,
+		error,
+	}
+);
+
 export const getDrafts = () => ( dispatch ) => {
 	dispatch( { type: FETCH_DRAFTS_REQUEST } );
 
-	return Promise.resolve( true );
+	return request.get( APP_DATA.ajax_url, {
+		action: 'get_shared_drafts',
+	} )
+	.then( resp => {
+		dispatch( getDraftsSuccess( resp ) );
+	} )
+	.catch( error => {
+		dispatch( getDraftsFailure( error ) );
+	} );
 };

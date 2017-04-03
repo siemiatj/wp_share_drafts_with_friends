@@ -4,7 +4,8 @@
     "browser": true,
   },
   "globals": {
-    "__DEV__": true
+    "__DEV__": true,
+    "APP_DATA": true
   },
   "parserOptions": {
     "ecmaVersion": 6,
