@@ -52,7 +52,7 @@ export default reducer;
 ================================================================================================ */
 const getDraftsSuccess = ( data ) => (
 	{
-		type: FETCH_DRAFTS_FAILURE,
+		type: FETCH_DRAFTS_SUCCESS,
 		payload: data,
 	}
 );
