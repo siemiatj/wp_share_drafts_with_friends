@@ -1,30 +1,29 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import ShareForm from 'containers/share_form';
 
 export default class ShareDrafts extends Component {
+	constructor( props ) {
+		super( props );
+
+		this.formSubmit = this.formSubmit.bind( this );
+	}
+
+	componentDidMount() {
+		this.props.getDrafts();
+	}
+
+	formSubmit( formData ) {
+		console.log('formData: ', formData);
+	}
+
 	render() {
 		return (
-			<form id="draftsforfriends-share" action="">
-				<p>
-					<select id="draftsforfriends-postid" name="post_id">
-						<option value="">Choose a draft</option>
-					</select>
-				</p>
-				<p>
-					<input
-						type="submit"
-						className="button"
-						name="draftsforfriends_submit"
-						value="Share it"
-					/>
-					<input name="expires" type="text" value="2" size="4" />
-					<select name="measure">
-						<option value="s">seconds</option>
-						<option value="m">minutes</option>
-						<option value="h" selected="selected">hours</option>
-						<option value="d">days</option>
-					</select>
-				</p>
-			</form>
+			<ShareForm onFormSubmit={ this.formSubmit } drafts={ this.props.drafts } />
 		);
 	}
 }
+
+ShareDrafts.propTypes = {
+	drafts: PropTypes.array,
+	getDrafts: PropTypes.func,
+};
