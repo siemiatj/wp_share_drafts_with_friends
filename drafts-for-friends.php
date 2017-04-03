@@ -12,13 +12,14 @@ Text Domain: draftsforfriends
 class Drafts_For_Friends	{
 
 	public function __construct(){
-			add_action( 'init', array( &$this, 'init' ) );
+		add_action( 'init', array( &$this, 'init' ) );
 	}
 
 	public function init() {
 		global $current_user;
 
 		define('ASSETS_PATH',  plugins_url( '/', __FILE__ ) );
+		define('INCLUDES_PATH', WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__) ) . '/' );
 
 		add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
 		add_filter( 'the_posts', array( $this, 'the_posts_intercept' ) );
@@ -37,8 +38,15 @@ class Drafts_For_Friends	{
 	}
 
 	public function enqueue_scripts() {
-		wp_enqueue_script( 'bundle', ASSETS_PATH . 'build/bundle.js', array() );
 		wp_enqueue_script( 'jquery-handle-table', ASSETS_PATH . 'build/handle_table.js', array() );
+		wp_localize_script( 'jquery-handle-table',
+			'APP_DATA',
+			array(
+				'nonce' => wp_create_nonce( 'my_nonce' ),
+				'ajax_url' => admin_url( 'admin-ajax.php' )
+			)
+		);
+		wp_enqueue_script( 'bundle', ASSETS_PATH . 'build/bundle.js', array() );
 	}
 
 	private function get_admin_options() {
@@ -55,6 +63,8 @@ class Drafts_For_Friends	{
 	}
 
 	public function add_admin_pages(){
+		include_once( INCLUDES_PATH . 'admin-ajax.php');
+
 		add_submenu_page( 'edit.php', __('Drafts for Friends', 'draftsforfriends'), __('Drafts for Friends', 'draftsforfriends'),
 			'publish_posts', __FILE__, array( $this, 'output_existing_menu_sub_admin_page' ) );
 	}
@@ -127,6 +137,7 @@ class Drafts_For_Friends	{
 		$my_drafts    = $this->get_users_drafts( $current_user->ID );
 		$my_scheduled = $this->get_users_future( $current_user->ID );
 		$pending      = $this->get_others_pending();
+
 		$drafts = array(
 			array(
 				__('Your Drafts:', 'draftsforfriends'),
@@ -235,7 +246,6 @@ class Drafts_For_Friends	{
 	}
 
 	private function render_drafts_table() {
-		$shared = $this->get_shared();
 ?>
 		<?php $this->mount_react(); ?>
 <?php
