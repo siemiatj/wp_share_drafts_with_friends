@@ -1,4 +1,3 @@
-import { combineReducers } from 'redux';
 import request from 'axios';
 
 /* ENTRY ACTIONS
@@ -25,7 +24,7 @@ export const initialState = {
 
 /* REDUCERS
 ================================================================================================ */
-function draftsReducer( state = initialState, action ) {
+export default function reducer( state = initialState, action ) {
 	switch ( action.type ) {
 		case FETCH_DRAFTS_REQUEST:
 		case FETCH_SHARED_DRAFTS_REQUEST:
@@ -57,10 +56,6 @@ function draftsReducer( state = initialState, action ) {
 	}
 }
 
-const reducer = combineReducers( { drafts: draftsReducer } );
-
-export default reducer;
-
 /* ACTION CREATORS
 ================================================================================================ */
 const getDraftsSuccess = ( data ) => (
@@ -78,7 +73,7 @@ const getDraftsFailure = ( error ) => (
 	}
 );
 
-export const getShareiDrafts = () => ( dispatch ) => {
+export const getDrafts = () => ( dispatch ) => {
 	dispatch( { type: FETCH_DRAFTS_REQUEST } );
 
 	return request.get( APP_DATA.ajax_url, {
