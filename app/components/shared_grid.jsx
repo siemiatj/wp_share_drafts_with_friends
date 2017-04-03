@@ -3,7 +3,7 @@ import 'style.css';
 
 export default class SharedGrid extends Component {
 	componentDidMount() {
-		this.props.getDrafts();
+		this.props.getSharedDrafts();
 	}
 
 	renderEmptySharedPosts() {
@@ -103,5 +103,5 @@ export default class SharedGrid extends Component {
 
 SharedGrid.propTypes = {
 	drafts: PropTypes.array,
-	getDrafts: PropTypes.func,
+	getSharedDrafts: PropTypes.func,
 };
