@@ -25,13 +25,14 @@ export default class App extends Component {
 		this.state.data.forEach( shared => {
 			const shareExpires = shared.expires;
 			const shareKey = shared.key;
+			const shareUrl = shared.url;
 			const post = shared.post;
 
 			result.push(
 				<tr>
 					<td>{ post.id }</td>
 					<td>{ post.post_title }</td>
-					<td><a href=""> { post.url }</a></td>
+					<td><a href=""> { shareUrl }</a></td>
 					<td>{ shareExpires }</td>
 					<td className="actions">
 						<a
@@ -54,7 +55,7 @@ export default class App extends Component {
 								name="draftsforfriends_extend_submit" value="Extend"
 							/>
 							by
-							<input name="expires" type="text" value="2" size="4"/>
+							<input name="expires" type="text" value="2" size="4" />
 							<select name="measure">
 								<option value="s">seconds</option>
 								<option value="m">minutes</option>
