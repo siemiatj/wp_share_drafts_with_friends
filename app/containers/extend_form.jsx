@@ -9,7 +9,7 @@ class ExtendForm extends Component {
 		return (
 			<form className="draft-extend" onSubmit={ handleSubmit( onFormSubmit ) }>
 				<button type="submit" className="button">
-					Extend for
+					{ APP_DATA.translations[ 'extend_form-extendfor' ] }
 				</button>
 				<FormSection name="draft-extend">
 					<ShareTimeFields />

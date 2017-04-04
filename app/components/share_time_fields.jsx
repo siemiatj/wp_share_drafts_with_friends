@@ -10,10 +10,10 @@ const ShareTimeFields = () => (
 			size="4"
 		/>
 		<Field name="expire_unit" component="select" value={ 'minutes' }>
-			<option value="s">seconds</option>
-			<option value="m">minutes</option>
-			<option value="h">hours</option>
-			<option value="d">days</option>
+			<option value="s">{ APP_DATA.translations[ 'share_time_fields-s' ] }</option>
+			<option value="m">{ APP_DATA.translations[ 'share_time_fields-m' ] }</option>
+			<option value="h">{ APP_DATA.translations[ 'share_time_fields-h' ] }</option>
+			<option value="d">{ APP_DATA.translations[ 'share_time_fields-d' ] }</option>
 		</Field>
 	</div>
 );

@@ -49,7 +49,7 @@ export default class SharedGrid extends Component {
 	renderEmptySharedPosts() {
 		return (
 			<tr>
-				<td colSpan="5">No shared drafts!</td>
+				<td colSpan="5">{ APP_DATA.translations[ 'shared_grid-nodrafts' ] }</td>
 			</tr>
 		);
 	}
@@ -81,14 +81,14 @@ export default class SharedGrid extends Component {
 									onClick={ this.toggleFormVisible }
 									className="button"
 								>
-									Extend
+									{ APP_DATA.translations[ 'shared_grid-extend' ] }
 								</button>
 								<button
 									type="button"
 									onClick={ () => this.stopSharing( post.ID ) }
 									className={ classnames( 'button button-primary' ) }
 								>
-									Stop Sharing
+									{ APP_DATA.translations[ 'shared_grid-stopsharing' ] }
 								</button>
 							</div>
 							:
@@ -101,7 +101,7 @@ export default class SharedGrid extends Component {
 									className="cancel-share"
 									onClick={ this.toggleFormVisible }
 								>
-									Cancel
+									{ APP_DATA.translations[ 'shared_grid-cancel' ] }
 								</a>
 							</div>
 						}
@@ -119,10 +119,10 @@ export default class SharedGrid extends Component {
 				<thead>
 					<tr>
 						<th>ID</th>
-						<th>Title</th>
-						<th>Link</th>
-						<th>Expires</th>
-						<th colSpan="2">Actions</th>
+						<th>{ APP_DATA.translations[ 'shared_grid-title' ] }</th>
+						<th>{ APP_DATA.translations[ 'shared_grid-link' ] }</th>
+						<th>{ APP_DATA.translations[ 'shared_grid-expires' ] }</th>
+						<th colSpan="2">{ APP_DATA.translations[ 'shared_grid-actions' ] }</th>
 					</tr>
 				</thead>
 				<tbody>

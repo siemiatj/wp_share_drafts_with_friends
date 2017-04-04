@@ -6,9 +6,9 @@ import 'style.css';
 const App = () => (
   <div className="wrap">
     <h2>Drafts for Friends</h2>
-    <h3>Currently shared drafts</h3>
+    <h3>{ APP_DATA.translations[ 'app-currentlyshared' ] }</h3>
       <SharedGrid />
-    <h3>Share Drafts</h3>
+    <h3>{ APP_DATA.translations[ 'app-sharedrafts' ] }</h3>
       <ShareDraftsForm />
   </div>
 );

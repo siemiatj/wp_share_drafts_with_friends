@@ -13,7 +13,12 @@ export default class ShareDrafts extends Component {
 	}
 
 	formSubmit( formData ) {
-		this.props.shareDraft( formData );
+		const data = {
+			...formData[ 'draft-share' ],
+			post_id: formData.post_id,
+		};
+
+		this.props.shareDraft( data );
 	}
 
 	render() {
