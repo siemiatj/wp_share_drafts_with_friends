@@ -1,20 +1,48 @@
 import React, { Component, PropTypes } from 'react';
 import { v4 } from 'node-uuid';
 import moment from 'moment';
-import 'style.css';
+import classnames from 'classnames';
+import ExtendForm from 'containers/extend_form';
 
 export default class SharedGrid extends Component {
 	constructor( props ) {
 		super( props );
 
-		this.deleteClicked = this.deleteClicked.bind( this );
+		this.state = {
+			formVisible: false,
+		};
+
+		this.formSubmit = this.formSubmit.bind( this );
+		this.stopSharing = this.stopSharing.bind( this );
+		this.toggleFormVisible = this.toggleFormVisible.bind( this );
 	}
 
 	componentDidMount() {
 		this.props.getSharedDrafts();
 	}
 
-	deleteClicked( postId ) {
+	toggleFormVisible( forceState ) {
+		let state = ( ! this.state.formVisible );
+
+		if ( forceState ) {
+			state = forceState === 'hide' ? false : true;
+		}
+		this.setState( {
+			formVisible: state,
+		} );
+	}
+
+	formSubmit( formData, postId ) {
+		const data = formData[ 'draft-extend' ];
+		data.post_id = postId;
+
+		this.props.extendShare( data )
+		.then( () => {
+			this.toggleFormVisible( 'hide' );
+		} );
+	}
+
+	stopSharing( postId ) {
 		this.props.unShareDraft( postId );
 	}
 
@@ -28,12 +56,12 @@ export default class SharedGrid extends Component {
 
 	renderSharedPosts() {
 		const { drafts } = this.props;
+		const { formVisible } = this.state;
 		const result = [];
 
 		drafts.forEach( draft => {
 			const shared = draft.shared;
 			const shareExpires = shared.expires;
-			const shareKey = shared.key;
 			const shareUrl = shared.url;
 			const post = draft.post;
 
@@ -41,53 +69,42 @@ export default class SharedGrid extends Component {
 				<tr key={ v4() }>
 					<td>{ post.ID }</td>
 					<td>{ post.post_title }</td>
-					<td><a href=""> { shareUrl }</a></td>
-					<td>{ moment( shareExpires ).fromNow() }</td>
-					<td className="actions">
-						<a
-							className="draftsforfriends-extend edit"
-							id={ `draftsforfriends-extend-link-${ shareKey }` }
-							href=""
-						>
-								Extend
-						</a>
-						<form
-							className="draftsforfriends-extend"
-							id={ `draftsforfriends-extend-form-${ shareKey }` }
-							action="" method="post"
-						>
-							<input type="hidden" name="action" value="extend" />
-							<input type="hidden" name="key" value={ shareKey } />
-							<input
-								type="submit"
-								className="button"
-								name="draftsforfriends_extend_submit" value="Extend"
-							/>
-							by
-							<input name="expires" type="text" value="2" size="4" />
-							<select name="measure" defaultValue={ 'minutes' }>
-								<option value="s">seconds</option>
-								<option value="m">minutes</option>
-								<option value="h">hours</option>
-								<option value="d">days</option>
-							</select>
-							<button
-								type="button"
-								onClick=""
-								className="draftsforfriends-extend-cancel"
-							>
-								Cancel
-							</button>
-						</form>
+					<td>
+						<a href=""> { shareUrl }</a>
 					</td>
-					<td className="actions">
-						<button
-							type="button"
-							onClick={ () => this.deleteClicked( post.ID ) }
-							className="delete"
-						>
-							Delete
-						</button>
+					<td>{ moment( shareExpires ).fromNow() }</td>
+					<td colSpan="2" className="actions">
+						{ ( ! formVisible ) ?
+							<div className="share-actions">
+								<button
+									type="button"
+									onClick={ this.toggleFormVisible }
+									className="button"
+								>
+									Extend
+								</button>
+								<button
+									type="button"
+									onClick={ () => this.stopSharing( post.ID ) }
+									className={ classnames( 'button button-primary' ) }
+								>
+									Stop Sharing
+								</button>
+							</div>
+							:
+							<div className="share-form">
+								<ExtendForm
+									onFormSubmit={ ( formData ) => this.formSubmit( formData, post.ID ) }
+								/>
+								<a
+									href=""
+									className="cancel-share"
+									onClick={ this.toggleFormVisible }
+								>
+									Cancel
+								</a>
+							</div>
+						}
 					</td>
 				</tr>
 			);
@@ -105,7 +122,7 @@ export default class SharedGrid extends Component {
 						<th>Title</th>
 						<th>Link</th>
 						<th>Expires</th>
-						<th colSpan="2" className="actions">Actions</th>
+						<th colSpan="2">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -123,4 +140,5 @@ SharedGrid.propTypes = {
 	drafts: PropTypes.array,
 	getSharedDrafts: PropTypes.func,
 	unShareDraft: PropTypes.func,
+	extendShare: PropTypes.func,
 };

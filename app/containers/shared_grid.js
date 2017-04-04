@@ -3,7 +3,7 @@
  */
 import { connect } from 'react-redux';
 import SharedGrid from 'components/shared_grid';
-import { getSharedDrafts, unShareDraft } from 'ducks';
+import { getSharedDrafts, unShareDraft, extendShare } from 'ducks';
 
 function mapStateToProps( state ) {
 	return {
@@ -14,4 +14,5 @@ function mapStateToProps( state ) {
 export default connect( mapStateToProps, {
 	getSharedDrafts,
 	unShareDraft,
+	extendShare,
 } )( SharedGrid );
