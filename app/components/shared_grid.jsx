@@ -1,9 +1,20 @@
 import React, { Component, PropTypes } from 'react';
+import { v4 } from 'node-uuid';
 import 'style.css';
 
 export default class SharedGrid extends Component {
+	constructor( props ) {
+		super( props );
+
+		this.deleteClicked = this.deleteClicked.bind( this );
+	}
+
 	componentDidMount() {
 		this.props.getSharedDrafts();
+	}
+
+	deleteClicked( postId ) {
+		this.props.unShareDraft( postId );
 	}
 
 	renderEmptySharedPosts() {
@@ -18,15 +29,16 @@ export default class SharedGrid extends Component {
 		const { drafts } = this.props;
 		const result = [];
 
-		drafts.forEach( shared => {
+		drafts.forEach( draft => {
+			const shared = draft.shared;
 			const shareExpires = shared.expires;
 			const shareKey = shared.key;
 			const shareUrl = shared.url;
-			const post = shared.post;
+			const post = draft.post;
 
 			result.push(
-				<tr>
-					<td>{ post.id }</td>
+				<tr key={ v4() }>
+					<td>{ post.ID }</td>
 					<td>{ post.post_title }</td>
 					<td><a href=""> { shareUrl }</a></td>
 					<td>{ shareExpires }</td>
@@ -52,24 +64,29 @@ export default class SharedGrid extends Component {
 							/>
 							by
 							<input name="expires" type="text" value="2" size="4" />
-							<select name="measure">
+							<select name="measure" defaultValue={ 'minutes' }>
 								<option value="s">seconds</option>
 								<option value="m">minutes</option>
-								<option value="h" selected="selected">hours</option>
+								<option value="h">hours</option>
 								<option value="d">days</option>
 							</select>
-							<a
+							<button
+								type="button"
+								onClick=""
 								className="draftsforfriends-extend-cancel"
-								href="">
+							>
 								Cancel
-							</a>
+							</button>
 						</form>
 					</td>
 					<td className="actions">
-						<a
+						<button
+							type="button"
+							onClick={ () => this.deleteClicked( post.ID ) }
 							className="delete"
-							href=""
-						>Delete</a>
+						>
+							Delete
+						</button>
 					</td>
 				</tr>
 			);
@@ -104,4 +121,5 @@ export default class SharedGrid extends Component {
 SharedGrid.propTypes = {
 	drafts: PropTypes.array,
 	getSharedDrafts: PropTypes.func,
+	unShareDraft: PropTypes.func,
 };
