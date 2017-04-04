@@ -38,6 +38,28 @@ class Drafts_For_Friends	{
 		add_action('admin_head', array($this, 'enqueue_scripts'));
 	}
 
+	private function get_js_translations(){
+		return array(
+			'share_form-shareit'      => __('Share it', 'draftsforfriends'),
+			'share_form-chooseadraft' => __( 'Choose a draft', 'draftsforfriends'),
+			'extend_form-extendfor'   => __( 'Extend for', 'draftsforfriends'),
+			'shared_grid-nodrafts'    => __( 'No shared drafts !', 'draftsforfriends'),
+			'shared_grid-extend'      => __( 'Extend', 'draftsforfriends'),
+			'shared_grid-stopsharing' => __( 'Stop sharing', 'draftsforfriends'),
+			'shared_grid-cancel'      => __( 'Cancel', 'draftsforfriends'),
+			'shared_grid-title'       => __( 'Title', 'draftsforfriends'),
+			'shared_grid-link'        => __( 'Link', 'draftsforfriends'),
+			'shared_grid-expires'     => __( 'Expires', 'draftsforfriends'),
+			'shared_grid-actions'     => __( 'Actions', 'draftsforfriends'),
+			'share_time_fields-s'     => __( 'seconds', 'draftsforfriends'),
+			'share_time_fields-m'     => __( 'minutes', 'draftsforfriends'),
+			'share_time_fields-h'     => __( 'hours', 'draftsforfriends'),
+			'share_time_fields-d'     => __( 'days', 'draftsforfriends'),
+			'app-currentlyshared'     => __( 'Currently shared drafts', 'draftsforfriends'),
+			'app-sharedrafts'         => __( 'Share Drafts', 'draftsforfriends')
+		);
+	}
+
 	public function enqueue_scripts() {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-handle-table', ASSETS_PATH . 'build/handle_table.js', array() );
@@ -45,7 +67,8 @@ class Drafts_For_Friends	{
 			'APP_DATA',
 			array(
 				'nonce' => wp_create_nonce( 'my_nonce' ),
-				'ajax_url' => admin_url( 'admin-ajax.php' )
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'translations' => $this->get_js_translations()
 			)
 		);
 		wp_enqueue_script( 'bundle', ASSETS_PATH . 'build/bundle.js', array() );
