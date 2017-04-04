@@ -50,8 +50,8 @@ class ShareForm extends Component {
 					<div>
 						<button type="submit" className="button">Share it</button>
 					</div>
-					<Field name="expires" component="input" type="text" placeholder="2" size="4" />
-					<Field name="time_measure" component="select">
+					<Field name="expire_time" component="input" type="text" placeholder="2" size="4" />
+					<Field name="expire_unit" component="select">
 						<option value="s">seconds</option>
 						<option value="m">minutes</option>
 						<option value="h">hours</option>

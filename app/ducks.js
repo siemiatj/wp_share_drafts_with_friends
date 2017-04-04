@@ -10,6 +10,14 @@ const FETCH_SHARED_DRAFTS_REQUEST = 'draftsforfriends/FETCH_SHARED_DRAFTS_REQUES
 const FETCH_SHARED_DRAFTS_SUCCESS = 'draftsforfriends/FETCH_SHARED_DRAFTS_SUCCESS';
 const FETCH_SHARED_DRAFTS_FAILURE = 'draftsforfriends/FETCH_SHARED_DRAFTS_FAILURE';
 
+const SHARE_DRAFT_REQUEST = 'draftsforfriends/SHARE_DRAFT_REQUEST';
+const SHARE_DRAFT_SUCCESS = 'draftsforfriends/SHARE_DRAFT_SUCCESS';
+const SHARE_DRAFT_FAILURE = 'draftsforfriends/SHARE_DRAFT_FAILURE';
+
+// const UNSHARE_DRAFT_REQUEST = 'draftsforfriends/UNSHARE_DRAFT_REQUEST';
+// const UNSHARE_DRAFT_SUCCESS = 'draftsforfriends/UNSHARE_DRAFT_SUCCESS';
+// const UNSHARE_DRAFT_FAILURE = 'draftsforfriends/UNSHARE_DRAFT_FAILURE';
+
 /* INITIAL STATES
 ================================================================================================ */
 export const initialState = {
@@ -42,6 +50,7 @@ export default function reducer( state = initialState, action ) {
 		case FETCH_SHARED_DRAFTS_SUCCESS:
 			return {
 				...state,
+				sharedDrafts: [ ...action.payload ],
 				isFetching: false,
 				isError: false,
 			};
@@ -110,5 +119,46 @@ export const getSharedDrafts = () => ( dispatch ) => {
 	} )
 	.catch( error => {
 		dispatch( getSharedDraftsFailure( error ) );
+	} );
+};
+
+const shareDraftSuccess = ( responseData ) => (
+	{
+		type: SHARE_DRAFT_SUCCESS,
+		payload: responseData,
+	}
+);
+
+const shareDraftFailure = ( error ) => (
+	{
+		type: SHARE_DRAFT_FAILURE,
+		payload: null,
+		error,
+	}
+);
+
+export const shareDraft = ( formData ) => ( dispatch ) => {
+	dispatch( { type: SHARE_DRAFT_REQUEST } );
+
+	const data = new FormData();
+	data.append( 'action', 'start_sharing_draft' );
+	data.append( 'nonce', 'my-nonce' );
+	data.append( 'post_id', formData.post_id );
+	data.append( 'expire_time', formData.expire_time );
+	data.append( 'expire_unit', formData.expire_unit );
+
+	const opts = {
+		method: 'post',
+		url: `${ APP_DATA.ajax_url }`,
+		data: data,
+		headers: { 'Content-Type': 'multipart/form-data' },
+	};
+
+	return request( opts )
+	.then( resp => {
+		dispatch( shareDraftSuccess( resp.data ) );
+	} )
+	.catch( error => {
+		dispatch( shareDraftFailure( error ) );
 	} );
 };

@@ -13,7 +13,7 @@ export default class ShareDrafts extends Component {
 	}
 
 	formSubmit( formData ) {
-		console.log('formData: ', formData);
+		this.props.shareDraft( formData );
 	}
 
 	render() {
@@ -26,4 +26,5 @@ export default class ShareDrafts extends Component {
 ShareDrafts.propTypes = {
 	drafts: PropTypes.array,
 	getDrafts: PropTypes.func,
+	shareDraft: PropTypes.func,
 };

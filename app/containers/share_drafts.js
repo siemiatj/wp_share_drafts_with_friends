@@ -3,7 +3,7 @@
  */
 import { connect } from 'react-redux';
 import ShareDrafts from 'components/share_drafts';
-import { getDrafts } from 'ducks';
+import { getDrafts, shareDraft } from 'ducks';
 
 function mapStateToProps( state ) {
 	return {
@@ -13,4 +13,5 @@ function mapStateToProps( state ) {
 
 export default connect( mapStateToProps, {
 	getDrafts,
+	shareDraft,
 } )( ShareDrafts );
