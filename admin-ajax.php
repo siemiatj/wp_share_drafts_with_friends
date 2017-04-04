@@ -169,26 +169,26 @@ class Drafts_For_Friends_Admin_Ajax {
 
 			$transient_name = 'mytransient_' . $post_id;
 			$transient = get_transient( $transient_name );
-			$expiration;
 
-			if($transient) {
-				$current_expiration = get_option( '_transient_timeout_' . $transient_name );
-				$new_expiration = self::calc( array('expires' => $expire_time, 'measure' => $expire_unit ) );
+			if ( $transient ) {
+				$current_time             = current_time( 'timestamp', 0 );
+				$current_expiration_time  = intval( get_option( '_transient_timeout_' . $transient_name ) );
+				$new_expiration_value     = self::calc( array('expires' => $expire_time, 'measure' => $expire_unit ) );
+				$current_expiration_value = $current_expiration_time - $current_time;
+				$expiration               = $current_expiration_value + $new_expiration_value;
 
-				$expiration = $current_expiration + $new_expiration;
-			} else {
-				die ( __( 'Post no longer shared!', 'draftsforfriends' ) );
+				set_transient( $transient_name, $transient, $expiration );
+
+				$return = array(
+					'share_expiration' => ( time() + $expiration ) * 1000,
+					'post_id'          => $post_id,
+				);
+
+				wp_send_json($return);
 			}
-			set_transient( $transient, $key, $expiration );
 
-			$return[]   = array(
-				'share_expiration' => $expiration * 1000,
-				'post_id'          => $post_id
-			);
-
-			wp_send_json($return);
+			die ( __( 'Post no longer shared!', 'draftsforfriends' ) );
 		}
-
 		die ( __( 'Bad request format! ', 'draftsforfriends' ) );
 	}
 
