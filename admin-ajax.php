@@ -12,9 +12,10 @@ class Drafts_For_Friends_Admin_Ajax {
 		add_action( 'wp_ajax_get_shared_drafts', array(__CLASS__, 'get_shared_drafts' ) );
 	}
 
-	private function calc( $params ) {
+	private static function calc( $params ) {
 		$expires = 60;
 		$multiply = 60;
+
 		if ( isset( $params['expires'] ) && ( $e = intval( $params['expires'] ) ) ) {
 			$expires = $e;
 		}
@@ -24,6 +25,7 @@ class Drafts_For_Friends_Admin_Ajax {
 			'h' => 3600,
 			'd' => 24*3600
 		);
+
 		if ( $params['measure'] && $mults[ $params['measure'] ] ) {
 			$multiply = $mults[ $params['measure'] ];
 		}
@@ -31,6 +33,13 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function get_drafts() {
+		// $nonce = $_REQUEST['nonce'];
+
+		// check_ajax_referer( 'my-nonce' );
+
+		// wp_verify_nonce( $_REQUEST['nonce'], 'my-nonce' );
+		// if (empty($_GET) || !wp_verify_nonce( $nonce, 'my-nonce' ) ) die( 'Security check' );
+
 		global $current_user;
 
 		$my_drafts    = self::get_users_drafts( $current_user->ID );
@@ -79,23 +88,60 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function get_shared_drafts() {
-		$return = array(
-			'message'	=> 'shared',
-		);
+		// wp_verify_nonce( $_REQUEST['nonce'], 'my-nonce' );
+		$posts = array();
+		$shared_data = array();
+		$return = array();
+
+		// if ( ! empty( $shared ) ) {
+		// 	foreach ( $shared as $single ) {
+		// 		$url         = get_bloginfo( 'url' ) . '/?p=' . $single->id . '&draftsforfriends='. $single['key'];
+		// 		$shared_data = array(
+		// 			'key'       => $single['key'],
+		// 			'expires'   => $single['expires'],
+		// 			'url'       => $url
+		// 		);
+		// 		$post        = get_post( $single['id'] );
+		// 		$results[]   = array(
+		// 			'shared'    => $shared_data,
+		// 			'post'      => $post
+		// 		);
+		// 	}
+		// }
+
+		// $post_types = get_post_types( '', 'names' );
+
+		$posts = get_posts( array(
+			// 'posts_per_page'   => -1,
+			// 'orderby'          => 'title',
+			// 'order'            => 'ASC',
+			'post_type'        => 'post',
+			'post_status'      => array( 'draft', 'pending', 'future' )
+		) );
+
+		foreach ( $posts as $post ) {
+			$transient_name = 'mytransient_' . $post->ID;
+			$shared_key = get_transient( $transient_name );
+			$return = array();
+
+			if ( $shared_key ) {
+				$url         = get_bloginfo( 'url' ) . '/?p=' . $post->ID . '&draftsforfriends='. $shared_key;
+				$expiration  = get_option( '_transient_timeout_' . $transient_name );
+				$shared_data = array(
+					'key'       => $shared_key,
+					'expires'   => $single['expires'],
+					'url'       => $url
+				);
+				$post        = get_post( $single['id'] );
+				$return[]   = array(
+					'shared'    => $shared_data,
+					'post'      => $post
+				);
+			}
+		}
 
 		wp_send_json($return);
 	}
-
-	// $result = array();
-
-	// if ( isset ( $_POST['draftsforfriends_submit'] ) ) {
-	// 	$result = $this->process_post_options( $_POST );
-	// } elseif( isset( $_POST['action'] ) && 'extend' == $_POST['action'] ){
-	// 	$result = $this->process_extend( $_POST );
-	// } elseif( isset( $_GET['action'] ) && 'delete' == $_GET['action'] ) {
-	// 	$result = $this->process_delete( $_GET );
-	// }
-	// $drafts = $this->get_drafts();
 
 	// private function process_delete( $params ) {
 	// 	$shared = array();
