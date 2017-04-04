@@ -33,13 +33,6 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function get_drafts() {
-		// $nonce = $_REQUEST['nonce'];
-
-		// check_ajax_referer( 'my-nonce' );
-
-		// wp_verify_nonce( $_REQUEST['nonce'], 'my-nonce' );
-		// if (empty($_GET) || !wp_verify_nonce( $nonce, 'my-nonce' ) ) die( 'Security check' );
-
 		global $current_user;
 
 		$my_drafts    = self::get_users_drafts( $current_user->ID );
@@ -88,33 +81,11 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function get_shared_drafts() {
-		// wp_verify_nonce( $_REQUEST['nonce'], 'my-nonce' );
 		$posts = array();
 		$shared_data = array();
 		$return = array();
 
-		// if ( ! empty( $shared ) ) {
-		// 	foreach ( $shared as $single ) {
-		// 		$url         = get_bloginfo( 'url' ) . '/?p=' . $single->id . '&draftsforfriends='. $single['key'];
-		// 		$shared_data = array(
-		// 			'key'       => $single['key'],
-		// 			'expires'   => $single['expires'],
-		// 			'url'       => $url
-		// 		);
-		// 		$post        = get_post( $single['id'] );
-		// 		$results[]   = array(
-		// 			'shared'    => $shared_data,
-		// 			'post'      => $post
-		// 		);
-		// 	}
-		// }
-
-		// $post_types = get_post_types( '', 'names' );
-
 		$posts = get_posts( array(
-			// 'posts_per_page'   => -1,
-			// 'orderby'          => 'title',
-			// 'order'            => 'ASC',
 			'post_type'        => 'post',
 			'post_status'      => array( 'draft', 'pending', 'future' )
 		) );
@@ -169,30 +140,34 @@ class Drafts_For_Friends_Admin_Ajax {
 	// 	$this->save_admin_options();
 	// }
 
-	// private function process_post_options( $params ) {
-	// 	global $current_user;
-	// 	if ( $params['post_id'] ) {
-	// 		$post = get_post( $params['post_id'] );
-	// 		if ( ! $post ) {
-	// 			return __('There is no such post!', 'draftsforfriends');
-	// 		}
-	// 		if ( 'publish' == get_post_status( $post ) ) {
-	// 			return __('The post is published!', 'draftsforfriends');
-	// 		}
-	// 		$this->user_options['shared'][] = array(
-	// 			'id'      => $post->ID,
-	// 			'expires' => time() + $this->calc( $params ),
-	// 			'key'     => 'baba_' . wp_generate_password( 8, false )
-	// 		);
-	// 		$this->save_admin_options();
-	// 	}	
-	// }
-
 	public static function start_sharing_draft() {
-		wp_verify_nonce( $_REQUEST['nonce'], 'my-nonce' );
-		$response = array('response' => 'start' );
-		echo json_encode( $response );
-		die();
+		if ( isset( $_POST['post_id'] ) ) {
+			$post_id = intval( $_POST['post_id'] );
+			$expire_time = intval( $_POST['expire_time'] );
+			$expire_unit = $_POST['expire_unit'];
+			$post = get_post( $params['post_id'] );
+
+			if ( ! $post ) {
+				 die( __( 'There is no such post!', 'draftsforfriends' ) );
+			}
+			if ( 'publish' == get_post_status( $post ) ) {
+				die ( __( 'The post is published!', 'draftsforfriends' ) );
+			}
+
+			$transient = 'mytransient_' . $post_id;
+			$share_end_time = time() + self::calc( array('expires' => $expire_time, 'measure' => $expire_unit ) ); 
+			$key = 'baba_' . wp_generate_password( 8, false );
+
+			set_transient( $transient, $key, $share_end_time );
+
+			$return = array(
+				'message'	=> 'shared',
+			);
+
+			wp_send_json($return);
+		}
+
+		die ( __( 'Bad request format! ', 'draftsforfriends' ) );
 	}
 
 	public static function stop_sharing_draft() {
