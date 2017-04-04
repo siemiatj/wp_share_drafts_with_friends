@@ -151,10 +151,17 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function stop_sharing_draft() {
-		wp_verify_nonce( $_REQUEST['nonce'], 'my-nonce' );
-		$response = array('response' => 'stop' );
-		echo json_encode( $response );
-		die();
+		if ( isset( $_REQUEST['post_id'] ) ) {
+			$post_id = intval( $_REQUEST['post_id'] );
+			$result = delete_transient( 'mytransient_' . $post_id);
+
+			wp_send_json( array(
+				'post_id' => $post_id,
+				'result' => $result,
+			) );
+		}
+
+		die ( __( 'Bad request format! ', 'draftsforfriends' ) );
 	}
 }
 
