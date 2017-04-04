@@ -1,4 +1,5 @@
 import request from 'axios';
+import reject from 'lodash.reject';
 
 /* ENTRY ACTIONS
 ================================================================================================ */
@@ -14,9 +15,9 @@ const SHARE_DRAFT_REQUEST = 'draftsforfriends/SHARE_DRAFT_REQUEST';
 const SHARE_DRAFT_SUCCESS = 'draftsforfriends/SHARE_DRAFT_SUCCESS';
 const SHARE_DRAFT_FAILURE = 'draftsforfriends/SHARE_DRAFT_FAILURE';
 
-// const UNSHARE_DRAFT_REQUEST = 'draftsforfriends/UNSHARE_DRAFT_REQUEST';
-// const UNSHARE_DRAFT_SUCCESS = 'draftsforfriends/UNSHARE_DRAFT_SUCCESS';
-// const UNSHARE_DRAFT_FAILURE = 'draftsforfriends/UNSHARE_DRAFT_FAILURE';
+const UNSHARE_DRAFT_REQUEST = 'draftsforfriends/UNSHARE_DRAFT_REQUEST';
+const UNSHARE_DRAFT_SUCCESS = 'draftsforfriends/UNSHARE_DRAFT_SUCCESS';
+const UNSHARE_DRAFT_FAILURE = 'draftsforfriends/UNSHARE_DRAFT_FAILURE';
 
 /* INITIAL STATES
 ================================================================================================ */
@@ -36,6 +37,8 @@ export default function reducer( state = initialState, action ) {
 	switch ( action.type ) {
 		case FETCH_DRAFTS_REQUEST:
 		case FETCH_SHARED_DRAFTS_REQUEST:
+		case SHARE_DRAFT_REQUEST:
+		case UNSHARE_DRAFT_REQUEST:
 			return {
 				...state,
 				isFetching: true,
@@ -54,8 +57,37 @@ export default function reducer( state = initialState, action ) {
 				isFetching: false,
 				isError: false,
 			};
+		case SHARE_DRAFT_SUCCESS:
+			const newDraft = { ...action.payload[ 0 ] };
+
+			return {
+				...state,
+				sharedDrafts: [
+					...state.sharedDrafts,
+					newDraft
+				],
+				isFetching: false,
+				isError: false,
+			};
+		case UNSHARE_DRAFT_SUCCESS:
+			const result = action.payload.result;
+			const draftId = parseInt( action.payload.post_id, 10 );
+			let newDraftsArray = [ ...state.sharedDrafts ];
+
+			if ( result ) {
+				newDraftsArray = reject( newDraftsArray, draft => draft.post.ID === draftId );
+			}
+
+			return {
+				...state,
+				sharedDrafts: newDraftsArray,
+				isFetching: false,
+				isError: false,
+			};
 		case FETCH_DRAFTS_FAILURE:
 		case FETCH_SHARED_DRAFTS_FAILURE:
+		case SHARE_DRAFT_FAILURE:
+		case UNSHARE_DRAFT_FAILURE:
 			return {
 				...state,
 				isFetching: false,
@@ -160,5 +192,39 @@ export const shareDraft = ( formData ) => ( dispatch ) => {
 	} )
 	.catch( error => {
 		dispatch( shareDraftFailure( error ) );
+	} );
+};
+
+const unShareDraftSuccess = ( responseData ) => (
+	{
+		type: UNSHARE_DRAFT_SUCCESS,
+		payload: responseData,
+	}
+);
+
+const unShareDraftFailure = ( error ) => (
+	{
+		type: UNSHARE_DRAFT_FAILURE,
+		payload: null,
+		error,
+	}
+);
+
+export const unShareDraft = ( postId ) => ( dispatch ) => {
+	dispatch( { type: UNSHARE_DRAFT_REQUEST } );
+
+	const opts = {
+		method: 'delete',
+		url: `${ APP_DATA.ajax_url }?action=stop_sharing_draft&post_id=${ postId }`,
+		headers: { 'X-WP-Nonce': APP_DATA.nonce },
+	};
+
+	return request( opts )
+
+	.then( resp => {
+		dispatch( unShareDraftSuccess( resp.data ) );
+	} )
+	.catch( error => {
+		dispatch( unShareDraftFailure( error ) );
 	} );
 };
