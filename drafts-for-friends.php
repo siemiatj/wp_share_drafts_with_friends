@@ -63,15 +63,12 @@ class Drafts_For_Friends	{
 	}
 
 	private function can_view( $post_id ) {
-		foreach ( $this->admin_options as $option ) {
-			$shares = $option['shared'];
-
-			foreach ( $shares as $share) {
-				if ( $share[ 'key'] == $_GET['draftsforfriends'] && $post_id ) {
-					return true;
-				}
-			}
+		$transient_name = 'mytransient_' . $post_id;
+		$shared_key = get_transient( $transient_name );
+		if ( $post_id && $shared_key == $_GET['draftsforfriends'] ) {
+			return true;
 		}
+
 		return false;
 	}
 
