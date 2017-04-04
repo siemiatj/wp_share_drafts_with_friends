@@ -19,6 +19,10 @@ const UNSHARE_DRAFT_REQUEST = 'draftsforfriends/UNSHARE_DRAFT_REQUEST';
 const UNSHARE_DRAFT_SUCCESS = 'draftsforfriends/UNSHARE_DRAFT_SUCCESS';
 const UNSHARE_DRAFT_FAILURE = 'draftsforfriends/UNSHARE_DRAFT_FAILURE';
 
+const EXTEND_SHARE_REQUEST = 'draftsforfriends/EXTEND_SHARE_REQUEST';
+const EXTEND_SHARE_SUCCESS = 'draftsforfriends/EXTEND_SHARE_SUCCESS';
+const EXTEND_SHARE_FAILURE = 'draftsforfriends/EXTEND_SHARE_FAILURE';
+
 /* INITIAL STATES
 ================================================================================================ */
 export const initialState = {
@@ -39,6 +43,7 @@ export default function reducer( state = initialState, action ) {
 		case FETCH_SHARED_DRAFTS_REQUEST:
 		case SHARE_DRAFT_REQUEST:
 		case UNSHARE_DRAFT_REQUEST:
+		case EXTEND_SHARE_REQUEST:
 			return {
 				...state,
 				isFetching: true,
@@ -84,10 +89,32 @@ export default function reducer( state = initialState, action ) {
 				isFetching: false,
 				isError: false,
 			};
+		case EXTEND_SHARE_SUCCESS:
+			const payload = action.payload;
+			const newDrafts = [];
+
+			state.sharedDrafts.forEach( draft => {
+				if ( draft.post.ID === payload.post_id ) {
+					const updatedDraft = { ...draft };
+
+					updatedDraft.shared.expires = parseInt( payload.share_expiration, 10 );
+					newDrafts.push( updatedDraft );
+				} else {
+					newDrafts.push( draft );
+				}
+			} );
+
+			return {
+				...state,
+				sharedDrafts: newDrafts,
+				isFetching: false,
+				isError: false,
+			};
 		case FETCH_DRAFTS_FAILURE:
 		case FETCH_SHARED_DRAFTS_FAILURE:
 		case SHARE_DRAFT_FAILURE:
 		case UNSHARE_DRAFT_FAILURE:
+		case EXTEND_SHARE_FAILURE:
 			return {
 				...state,
 				isFetching: false,
@@ -226,5 +253,45 @@ export const unShareDraft = ( postId ) => ( dispatch ) => {
 	} )
 	.catch( error => {
 		dispatch( unShareDraftFailure( error ) );
+	} );
+};
+
+const extendShareSuccess = ( responseData ) => (
+	{
+		type: EXTEND_SHARE_SUCCESS,
+		payload: responseData,
+	}
+);
+
+const extendShareFailure = ( error ) => (
+	{
+		type: EXTEND_SHARE_FAILURE,
+		payload: null,
+		error,
+	}
+);
+
+export const extendShare = ( formData ) => ( dispatch ) => {
+	dispatch( { type: EXTEND_SHARE_REQUEST } );
+
+	const data = new FormData();
+	data.append( 'action', 'extend_sharing_draft' );
+	data.append( 'post_id', formData.post_id );
+	data.append( 'expire_time', formData.expire_time );
+	data.append( 'expire_unit', formData.expire_unit );
+
+	const opts = {
+		method: 'post',
+		url: `${ APP_DATA.ajax_url }`,
+		data: data,
+		headers: { 'Content-Type': 'multipart/form-data' },
+	};
+
+	return request( opts )
+	.then( resp => {
+		dispatch( extendShareSuccess( resp.data ) );
+	} )
+	.catch( error => {
+		dispatch( extendShareFailure( error ) );
 	} );
 };
