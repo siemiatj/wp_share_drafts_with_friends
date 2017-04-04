@@ -35,6 +35,7 @@ export default function reducer( state = initialState, action ) {
 		case FETCH_DRAFTS_SUCCESS:
 			return {
 				...state,
+				drafts: [ ...action.payload ],
 				isFetching: false,
 				isError: false,
 			};
@@ -58,10 +59,10 @@ export default function reducer( state = initialState, action ) {
 
 /* ACTION CREATORS
 ================================================================================================ */
-const getDraftsSuccess = ( data ) => (
+const getDraftsSuccess = ( responseData ) => (
 	{
 		type: FETCH_DRAFTS_SUCCESS,
-		payload: data,
+		payload: responseData,
 	}
 );
 
@@ -76,21 +77,19 @@ const getDraftsFailure = ( error ) => (
 export const getDrafts = () => ( dispatch ) => {
 	dispatch( { type: FETCH_DRAFTS_REQUEST } );
 
-	return request.get( APP_DATA.ajax_url, {
-		action: 'get_drafts',
-	} )
+	return request.get( `${ APP_DATA.ajax_url }?action=get_drafts&nonce=my-nonce` )
 	.then( resp => {
-		dispatch( getDraftsSuccess( resp ) );
+		dispatch( getDraftsSuccess( resp.data ) );
 	} )
 	.catch( error => {
 		dispatch( getDraftsFailure( error ) );
 	} );
 };
 
-const getSharedDraftsSuccess = ( data ) => (
+const getSharedDraftsSuccess = ( responseData ) => (
 	{
 		type: FETCH_SHARED_DRAFTS_SUCCESS,
-		payload: data,
+		payload: responseData,
 	}
 );
 
@@ -105,11 +104,9 @@ const getSharedDraftsFailure = ( error ) => (
 export const getSharedDrafts = () => ( dispatch ) => {
 	dispatch( { type: FETCH_SHARED_DRAFTS_REQUEST } );
 
-	return request.get( APP_DATA.ajax_url, {
-		action: 'get_shared_drafts',
-	} )
+	return request.get( `${ APP_DATA.ajax_url }?action=get_shared_drafts&nonce=my-nonce` )
 	.then( resp => {
-		dispatch( getSharedDraftsSuccess( resp ) );
+		dispatch( getSharedDraftsSuccess( resp.data ) );
 	} )
 	.catch( error => {
 		dispatch( getSharedDraftsFailure( error ) );
