@@ -12,27 +12,34 @@ Text Domain: draftsforfriends
 class Drafts_For_Friends	{
 
 	public function __construct(){
+		$this->create_constants();
+		$this->include_files();
+		$this->admin_page_init();
+
 		add_action( 'init', array( &$this, 'init' ) );
 	}
 
-	public function init() {
-		global $current_user;
+	private function include_files() {
+		include_once( INCLUDES_PATH . 'admin-ajax.php');
+	}
 
+	private function create_constants() {
 		define('ASSETS_PATH',  plugins_url( '/', __FILE__ ) );
 		define('INCLUDES_PATH', WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__) ) . '/' );
+	}
 
-		add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
+	public function init() {
 		add_filter( 'the_posts', array( $this, 'the_posts_intercept' ) );
 		add_filter( 'posts_results', array( $this, 'posts_results_intercept' ));
-		$this->admin_page_init();
 	}
 
 	public function admin_page_init() {
-		wp_enqueue_script( 'jquery' );
+		add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
 		add_action('admin_head', array($this, 'enqueue_scripts'));
 	}
 
 	public function enqueue_scripts() {
+		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-handle-table', ASSETS_PATH . 'build/handle_table.js', array() );
 		wp_localize_script( 'jquery-handle-table',
 			'APP_DATA',
@@ -45,8 +52,6 @@ class Drafts_For_Friends	{
 	}
 
 	public function add_admin_pages(){
-		include_once( INCLUDES_PATH . 'admin-ajax.php');
-
 		add_submenu_page( 'edit.php', __('Drafts for Friends', 'draftsforfriends'), __('Drafts for Friends', 'draftsforfriends'),
 			'publish_posts', __FILE__, array( $this, 'render_sub_menu_page' ) );
 	}
