@@ -8,6 +8,7 @@ class Drafts_For_Friends_Admin_Ajax {
 	public function __construct() {
 		add_action( 'wp_ajax_start_sharing_draft', array(__CLASS__, 'start_sharing_draft' ) );
 		add_action( 'wp_ajax_stop_sharing_draft', array(__CLASS__, 'stop_sharing_draft' ) );
+		add_action( 'wp_ajax_extend_sharing_draft', array(__CLASS__, 'extend_sharing_draft' ) );
 		add_action( 'wp_ajax_get_drafts', array(__CLASS__, 'get_drafts' ) );
 		add_action( 'wp_ajax_get_shared_drafts', array(__CLASS__, 'get_shared_drafts' ) );
 	}
@@ -144,6 +145,45 @@ class Drafts_For_Friends_Admin_Ajax {
 			$return[]   = array(
 				'shared'    => $shared_data,
 				'post'      => $post
+			);
+
+			wp_send_json($return);
+		}
+
+		die ( __( 'Bad request format! ', 'draftsforfriends' ) );
+	}
+
+	public static function extend_sharing_draft() {
+		if ( isset( $_POST['post_id'] ) ) {
+			$post_id = intval( $_POST['post_id'] );
+			$expire_time = intval( $_POST['expire_time'] );
+			$expire_unit = $_POST['expire_unit'];
+			$post = get_post( $post_id );
+
+			if ( ! $post ) {
+				 die( __( 'There is no such post!', 'draftsforfriends' ) );
+			}
+			if ( 'publish' == get_post_status( $post ) ) {
+				die ( __( 'The post is published!', 'draftsforfriends' ) );
+			}
+
+			$transient_name = 'mytransient_' . $post_id;
+			$transient = get_transient( $transient_name );
+			$expiration;
+
+			if($transient) {
+				$current_expiration = get_option( '_transient_timeout_' . $transient_name );
+				$new_expiration = self::calc( array('expires' => $expire_time, 'measure' => $expire_unit ) );
+
+				$expiration = $current_expiration + $new_expiration;
+			} else {
+				die ( __( 'Post no longer shared!', 'draftsforfriends' ) );
+			}
+			set_transient( $transient, $key, $expiration );
+
+			$return[]   = array(
+				'share_expiration' => $expiration * 1000,
+				'post_id'          => $post_id
 			);
 
 			wp_send_json($return);
