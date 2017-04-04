@@ -100,10 +100,9 @@ class Drafts_For_Friends_Admin_Ajax {
 				$expiration  = get_option( '_transient_timeout_' . $transient_name );
 				$shared_data = array(
 					'key'       => $shared_key,
-					'expires'   => $single['expires'],
+					'expires'   => $expiration,
 					'url'       => $url
 				);
-				$post        = get_post( $single['id'] );
 				$return[]   = array(
 					'shared'    => $shared_data,
 					'post'      => $post
@@ -114,38 +113,12 @@ class Drafts_For_Friends_Admin_Ajax {
 		wp_send_json($return);
 	}
 
-	// private function process_delete( $params ) {
-	// 	$shared = array();
-
-	// 	foreach ( $this->user_options['shared'] as $share ) {
-	// 		if ( $share['key'] == $params['key'] ) {
-	// 			continue;
-	// 		}
-	// 		$shared[] = $share;
-	// 	}
-	// 	$this->user_options['shared'] = $shared;
-	// 	$this->save_admin_options();
-	// }
-
-	// private function process_extend( $params ) {
-	// 	$shared = array();
-
-	// 	foreach( $this->user_options['shared'] as $share ) {
-	// 		if ( $share['key'] == $params['key'] ) {
-	// 			$share['expires'] += $this->calc( $params );
-	// 		}
-	// 		$shared[] = $share;
-	// 	}
-	// 	$this->user_options['shared'] = $shared;
-	// 	$this->save_admin_options();
-	// }
-
 	public static function start_sharing_draft() {
 		if ( isset( $_POST['post_id'] ) ) {
 			$post_id = intval( $_POST['post_id'] );
 			$expire_time = intval( $_POST['expire_time'] );
 			$expire_unit = $_POST['expire_unit'];
-			$post = get_post( $params['post_id'] );
+			$post = get_post( $post_id );
 
 			if ( ! $post ) {
 				 die( __( 'There is no such post!', 'draftsforfriends' ) );
@@ -160,8 +133,15 @@ class Drafts_For_Friends_Admin_Ajax {
 
 			set_transient( $transient, $key, $share_end_time );
 
-			$return = array(
-				'message'	=> 'shared',
+			$url         = get_bloginfo( 'url' ) . '/?p=' . $post->ID . '&draftsforfriends='. $key;
+			$shared_data = array(
+				'key'       => $key,
+				'expires'   => $share_end_time,
+				'url'       => $url
+			);
+			$return[]   = array(
+				'shared'    => $shared_data,
+				'post'      => $post
 			);
 
 			wp_send_json($return);
