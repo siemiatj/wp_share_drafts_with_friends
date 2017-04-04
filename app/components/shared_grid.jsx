@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { v4 } from 'node-uuid';
+import moment from 'moment';
 import 'style.css';
 
 export default class SharedGrid extends Component {
@@ -41,7 +42,7 @@ export default class SharedGrid extends Component {
 					<td>{ post.ID }</td>
 					<td>{ post.post_title }</td>
 					<td><a href=""> { shareUrl }</a></td>
-					<td>{ shareExpires }</td>
+					<td>{ moment( shareExpires ).fromNow() }</td>
 					<td className="actions">
 						<a
 							className="draftsforfriends-extend edit"

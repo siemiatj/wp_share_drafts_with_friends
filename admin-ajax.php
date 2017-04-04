@@ -100,7 +100,8 @@ class Drafts_For_Friends_Admin_Ajax {
 				$expiration  = get_option( '_transient_timeout_' . $transient_name );
 				$shared_data = array(
 					'key'       => $shared_key,
-					'expires'   => $expiration,
+					// because javascript...
+					'expires'   => $expiration * 1000,
 					'url'       => $url
 				);
 				$return[]   = array(
@@ -128,15 +129,16 @@ class Drafts_For_Friends_Admin_Ajax {
 			}
 
 			$transient = 'mytransient_' . $post_id;
-			$share_end_time = time() + self::calc( array('expires' => $expire_time, 'measure' => $expire_unit ) ); 
+			$expiration = self::calc( array('expires' => $expire_time, 'measure' => $expire_unit ) );
 			$key = 'baba_' . wp_generate_password( 8, false );
 
-			set_transient( $transient, $key, $share_end_time );
+			set_transient( $transient, $key, $expiration );
 
 			$url         = get_bloginfo( 'url' ) . '/?p=' . $post->ID . '&draftsforfriends='. $key;
 			$shared_data = array(
 				'key'       => $key,
-				'expires'   => $share_end_time,
+				// because javascript...
+				'expires'   => ( time() + $expiration ) * 1000,
 				'url'       => $url
 			);
 			$return[]   = array(
