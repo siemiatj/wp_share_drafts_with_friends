@@ -31,11 +31,11 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function get_drafts() {
-		wp_verify_nonce( $_REQUEST['nonce'], 'my-nonce' );
 		global $current_user;
-		$my_drafts    = $this->get_users_drafts( $current_user->ID );
-		$my_scheduled = $this->get_users_future( $current_user->ID );
-		$pending      = $this->get_others_pending();
+
+		$my_drafts    = self::get_users_drafts( $current_user->ID );
+		$my_scheduled = self::get_users_future( $current_user->ID );
+		$pending      = self::get_others_pending();
 
 		$results = array(
 			array(
@@ -55,18 +55,16 @@ class Drafts_For_Friends_Admin_Ajax {
 			),
 		);
 
-		echo json_encode( array( 'data' => $results ) );
-
-		die();
+		wp_send_json( $results );
 	}
 
-	private function get_others_pending() {
+	private static function get_others_pending() {
 		return get_posts( array(
 			'post_status' => array( 'draft', 'pending' ),
 		) );
 	}
 
-	private function get_users_drafts( $user_id ) {
+	private static function get_users_drafts( $user_id ) {
 		global $wpdb;
 
 		$query = $wpdb->prepare("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'draft' AND post_author = %d ORDER BY post_modified DESC", $user_id);
@@ -75,39 +73,17 @@ class Drafts_For_Friends_Admin_Ajax {
 		return $wpdb->get_results( $query );
 	}
 	
-	private function get_users_future( $user_id ) {
+	private static function get_users_future( $user_id ) {
 		global $wpdb;
 		return $wpdb->get_results("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'future' AND post_author = $user_id ORDER BY post_modified DESC");
 	}
 
 	public static function get_shared_drafts() {
-		wp_verify_nonce( $_REQUEST['nonce'], 'my-nonce' );
-		$shared = array();
-		$results = array();
+		$return = array(
+			'message'	=> 'shared',
+		);
 
-		// if ( isset( $this->user_options['shared'] ) ) {
-		// 	$shared = $this->user_options['shared'];
-		// }
-
-		if ( ! empty( $shared ) ) {
-			foreach ( $shared as $single ) {
-				$url         = get_bloginfo( 'url' ) . '/?p=' . $single->id . '&draftsforfriends='. $single['key'];
-				$shared_data = array(
-					'key'       => $single['key'],
-					'expires'   => $single['expires'],
-					'url'       => $url
-				);
-				$post        = get_post( $single['id'] );
-				$results[]   = array(
-					'shared'    => $shared_data,
-					'post'      => $post
-				);
-			}
-		}
-
-		echo json_encode( array( 'data' => $results ) );
-
-		die();
+		wp_send_json($return);
 	}
 
 	// $result = array();
