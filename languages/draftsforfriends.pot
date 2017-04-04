@@ -1,0 +1,138 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-04 22:51+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco - https://localise.biz/"
+
+#: admin-ajax.php:45
+msgid "Your Drafts:"
+msgstr ""
+
+#: admin-ajax.php:50
+msgid "Your Scheduled Posts:"
+msgstr ""
+
+#: admin-ajax.php:55
+msgid "Pending Review:"
+msgstr ""
+
+#: admin-ajax.php:126 admin-ajax.php:164
+msgid "There is no such post!"
+msgstr ""
+
+#: admin-ajax.php:129 admin-ajax.php:167
+msgid "The post is published!"
+msgstr ""
+
+#: admin-ajax.php:153 admin-ajax.php:192 admin-ajax.php:206
+msgid "Bad request format! "
+msgstr ""
+
+#: admin-ajax.php:190
+msgid "Post no longer shared!"
+msgstr ""
+
+#: drafts-for-friends.php:43
+msgid "Share it"
+msgstr ""
+
+#: drafts-for-friends.php:44
+msgid "Choose a draft"
+msgstr ""
+
+#: drafts-for-friends.php:45
+msgid "Extend for"
+msgstr ""
+
+#: drafts-for-friends.php:46
+msgid "No shared drafts !"
+msgstr ""
+
+#: drafts-for-friends.php:47
+msgid "Extend"
+msgstr ""
+
+#: drafts-for-friends.php:48
+msgid "Stop sharing"
+msgstr ""
+
+#: drafts-for-friends.php:49
+msgid "Cancel"
+msgstr ""
+
+#: drafts-for-friends.php:50
+msgid "Title"
+msgstr ""
+
+#: drafts-for-friends.php:51
+msgid "Link"
+msgstr ""
+
+#: drafts-for-friends.php:52
+msgid "Expires"
+msgstr ""
+
+#: drafts-for-friends.php:53
+msgid "Actions"
+msgstr ""
+
+#: drafts-for-friends.php:54
+msgid "seconds"
+msgstr ""
+
+#: drafts-for-friends.php:55
+msgid "minutes"
+msgstr ""
+
+#: drafts-for-friends.php:56
+msgid "hours"
+msgstr ""
+
+#: drafts-for-friends.php:57
+msgid "days"
+msgstr ""
+
+#: drafts-for-friends.php:58
+msgid "Currently shared drafts"
+msgstr ""
+
+#: drafts-for-friends.php:59
+msgid "Share Drafts"
+msgstr ""
+
+#: drafts-for-friends.php:78 drafts-for-friends.php:78
+msgid "Drafts for Friends"
+msgstr ""
+
+#. Name of the plugin
+msgid "DraftsForFriends"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Now you don't need to add friends as users to the blog in order to let them "
+"preview your drafts. Modified from Drafts for Friends originally by Neville "
+"Longbottom."
+msgstr ""
+
+#. URI of the plugin
+msgid "http://github.com/siemiatj"
+msgstr ""
+
+#. Author of the plugin
+msgid "Kuba 'sasklacz' Siemiatkowski"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "http://saskla.cz"
+msgstr ""
