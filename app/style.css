@@ -1,11 +1,39 @@
-a.draftsforfriends-extend, a.draftsforfriends-extend-cancel {
-	display: none;
+.shared-drafts-table td {
+  line-height: 2em;
 }
 
-form.draftsforfriends-extend {
+.shared-drafts-table .actions-header {
+  width: 300px;
+}
+
+.shared-drafts-table .share-buttons .button-stop-sharing {
+  margin-left: 5px;
+}
+
+.share-form {
+  display: flex;
+}
+
+.share-form .cancel-share {
+  padding-left: 10px;
+  padding-top: 2px;
+  display: block;
+}
+
+form.draft-share, form.draft-extend {
 	white-space: nowrap;
+  display: flex;
 }
 
-form.draftsforfriends-extend, form.draftsforfriends-extend input, form.draftsforfriends-extend select {
+form.draft-share .form-time-fields {
+  width: 200px;
+}
+
+form.draft-share input, form.draft-extend input, form.draft-share select, form.draft-extend select {
 	font-size: 11px;
+}
+
+.form-time-fields input {
+  padding: 6px;
+  margin: 0 3px;
 }

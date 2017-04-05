@@ -21,8 +21,12 @@ export default class SharedGrid extends Component {
 		this.props.getSharedDrafts();
 	}
 
-	toggleFormVisible( forceState ) {
+	toggleFormVisible( e, forceState ) {
 		let state = ( ! this.state.formVisible );
+
+		if ( e ) {
+			e.preventDefault();
+		}
 
 		if ( forceState ) {
 			state = forceState === 'hide' ? false : true;
@@ -38,7 +42,7 @@ export default class SharedGrid extends Component {
 
 		this.props.extendShare( data )
 		.then( () => {
-			this.toggleFormVisible( 'hide' );
+			this.toggleFormVisible( null, 'hide' );
 		} );
 	}
 
@@ -73,12 +77,12 @@ export default class SharedGrid extends Component {
 						<a href=""> { shareUrl }</a>
 					</td>
 					<td>{ moment( shareExpires ).fromNow() }</td>
-					<td colSpan="2" className="actions">
+					<td className="actions-cell">
 						{ ( ! formVisible ) ?
-							<div className="share-actions">
+							<div className="share-buttons">
 								<button
 									type="button"
-									onClick={ this.toggleFormVisible }
+									onClick={ () => this.toggleFormVisible( null ) }
 									className="button"
 								>
 									{ APP_DATA.translations[ 'shared_grid-extend' ] }
@@ -86,7 +90,7 @@ export default class SharedGrid extends Component {
 								<button
 									type="button"
 									onClick={ () => this.stopSharing( post.ID ) }
-									className={ classnames( 'button button-primary' ) }
+									className={ classnames( 'button button-primary button-stop-sharing' ) }
 								>
 									{ APP_DATA.translations[ 'shared_grid-stopsharing' ] }
 								</button>
@@ -99,7 +103,7 @@ export default class SharedGrid extends Component {
 								<a
 									href=""
 									className="cancel-share"
-									onClick={ this.toggleFormVisible }
+									onClick={ ( e ) => this.toggleFormVisible( e ) }
 								>
 									{ APP_DATA.translations[ 'shared_grid-cancel' ] }
 								</a>
@@ -115,14 +119,16 @@ export default class SharedGrid extends Component {
 
 	render() {
 		return (
-			<table className="widefat">
+			<table className={ classnames( 'widefat shared-drafts-table' ) }>
 				<thead>
 					<tr>
 						<th>ID</th>
 						<th>{ APP_DATA.translations[ 'shared_grid-title' ] }</th>
 						<th>{ APP_DATA.translations[ 'shared_grid-link' ] }</th>
 						<th>{ APP_DATA.translations[ 'shared_grid-expires' ] }</th>
-						<th colSpan="2">{ APP_DATA.translations[ 'shared_grid-actions' ] }</th>
+						<th className="actions-header">
+							{ APP_DATA.translations[ 'shared_grid-actions' ] }
+						</th>
 					</tr>
 				</thead>
 				<tbody>

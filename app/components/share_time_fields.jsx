@@ -2,7 +2,7 @@ import React from 'react';
 import { Field } from 'redux-form';
 
 const ShareTimeFields = () => (
-	<div>
+	<div className="form-time-fields">
 		<Field
 			name="expire_time"
 			component="input"
