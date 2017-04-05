@@ -15,9 +15,7 @@ export default class SharedGrid extends Component {
 	constructor( props ) {
 		super( props );
 
-		this.state = {
-			formVisible: false,
-		};
+		this.state = {};
 
 		this.formSubmit = this.formSubmit.bind( this );
 		this.stopSharing = this.stopSharing.bind( this );
@@ -25,22 +23,30 @@ export default class SharedGrid extends Component {
 	}
 
 	componentDidMount() {
-		this.props.getSharedDrafts();
+		this.props.getSharedDrafts().
+		then( () => {
+			const formKeys = [];
+
+			this.props.drafts.forEach( draft => {
+				formKeys.push( `form-${ draft.post.ID }-visible` );
+			} );
+		} );
 	}
 
-	toggleFormVisible( e, forceState ) {
-		let state = ( ! this.state.formVisible );
+	toggleFormVisible( e, postId, forceState ) {
+		const newState = { ...this.state };
+		let visible = ( ! newState[ `form-${ postId }-visible` ] );
 
 		if ( e ) {
 			e.preventDefault();
 		}
 
 		if ( forceState ) {
-			state = forceState === 'hide' ? false : true;
+			visible = forceState === 'hide' ? false : true;
 		}
-		this.setState( {
-			formVisible: state,
-		} );
+		newState[ `form-${ postId }-visible` ] = visible;
+
+		this.setState( { ...newState } );
 	}
 
 	formSubmit( formData, postId ) {
@@ -49,7 +55,7 @@ export default class SharedGrid extends Component {
 
 		this.props.extendShare( data )
 		.then( () => {
-			this.toggleFormVisible( null, 'hide' );
+			this.toggleFormVisible( null, postId, 'hide' );
 		} );
 	}
 
@@ -67,7 +73,7 @@ export default class SharedGrid extends Component {
 
 	renderSharedPosts() {
 		const { drafts } = this.props;
-		const { formVisible } = this.state;
+		const { state } = this;
 		const result = [];
 
 		drafts.forEach( draft => {
@@ -75,6 +81,7 @@ export default class SharedGrid extends Component {
 			const shareExpires = shared.expires;
 			const shareUrl = shared.url;
 			const post = draft.post;
+			const formVisible = state[ `form-${ post.ID }-visible` ];
 
 			result.push(
 				<tr key={ v4() }>
@@ -89,7 +96,7 @@ export default class SharedGrid extends Component {
 							<div className="share-buttons">
 								<button
 									type="button"
-									onClick={ () => this.toggleFormVisible( null ) }
+									onClick={ () => this.toggleFormVisible( null, post.ID ) }
 									className="button"
 								>
 									{ APP_DATA.translations[ 'shared_grid-extend' ] }
@@ -110,7 +117,7 @@ export default class SharedGrid extends Component {
 								<a
 									href=""
 									className="cancel-share"
-									onClick={ ( e ) => this.toggleFormVisible( e ) }
+									onClick={ ( e ) => this.toggleFormVisible( e, post.ID ) }
 								>
 									{ APP_DATA.translations[ 'shared_grid-cancel' ] }
 								</a>
