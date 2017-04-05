@@ -34,6 +34,8 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function get_drafts() {
+		check_ajax_referer( 'my_nonce', 'nonce' );
+
 		global $current_user;
 
 		$my_drafts    = self::get_users_drafts( $current_user->ID );
@@ -82,6 +84,8 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function get_shared_drafts() {
+		check_ajax_referer( 'my_nonce', 'nonce' );
+
 		$posts = array();
 		$shared_data = array();
 		$return = array();
@@ -116,6 +120,8 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function start_sharing_draft() {
+		check_ajax_referer( 'my_nonce', 'nonce' );
+
 		if ( isset( $_POST['post_id'] ) ) {
 			$post_id = intval( $_POST['post_id'] );
 			$expire_time = intval( $_POST['expire_time'] );
@@ -154,6 +160,8 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function extend_sharing_draft() {
+		check_ajax_referer( 'my_nonce', 'nonce' );
+
 		if ( isset( $_POST['post_id'] ) ) {
 			$post_id = intval( $_POST['post_id'] );
 			$expire_time = intval( $_POST['expire_time'] );
@@ -193,6 +201,8 @@ class Drafts_For_Friends_Admin_Ajax {
 	}
 
 	public static function stop_sharing_draft() {
+		check_ajax_referer( 'my_nonce', 'nonce' );
+
 		if ( isset( $_REQUEST['post_id'] ) ) {
 			$post_id = intval( $_REQUEST['post_id'] );
 			$result = delete_transient( 'mytransient_' . $post_id);

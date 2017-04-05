@@ -145,7 +145,7 @@ const getDraftsFailure = ( error ) => (
 export const getDrafts = () => ( dispatch ) => {
 	dispatch( { type: FETCH_DRAFTS_REQUEST } );
 
-	return request.get( `${ APP_DATA.ajax_url }?action=get_drafts&nonce=my-nonce` )
+	return request.get( `${ APP_DATA.ajax_url }?action=get_drafts&nonce=${ APP_DATA.nonce }` )
 	.then( resp => {
 		dispatch( getDraftsSuccess( resp.data ) );
 	} )
@@ -172,7 +172,7 @@ const getSharedDraftsFailure = ( error ) => (
 export const getSharedDrafts = () => ( dispatch ) => {
 	dispatch( { type: FETCH_SHARED_DRAFTS_REQUEST } );
 
-	return request.get( `${ APP_DATA.ajax_url }?action=get_shared_drafts&nonce=my-nonce` )
+	return request.get( `${ APP_DATA.ajax_url }?action=get_shared_drafts&nonce=${ APP_DATA.nonce }` )
 	.then( resp => {
 		dispatch( getSharedDraftsSuccess( resp.data ) );
 	} )
@@ -201,7 +201,7 @@ export const shareDraft = ( formData ) => ( dispatch ) => {
 
 	const data = new FormData();
 	data.append( 'action', 'start_sharing_draft' );
-	data.append( 'nonce', 'my-nonce' );
+	data.append( 'nonce', APP_DATA.nonce );
 	data.append( 'post_id', formData.post_id );
 	data.append( 'expire_time', formData.expire_time );
 	data.append( 'expire_unit', formData.expire_unit );
@@ -242,8 +242,7 @@ export const unShareDraft = ( postId ) => ( dispatch ) => {
 
 	const opts = {
 		method: 'delete',
-		url: `${ APP_DATA.ajax_url }?action=stop_sharing_draft&post_id=${ postId }`,
-		headers: { 'X-WP-Nonce': APP_DATA.nonce },
+		url: `${ APP_DATA.ajax_url }?action=stop_sharing_draft&post_id=${ postId }&nonce=${ APP_DATA.nonce }`,
 	};
 
 	return request( opts )
@@ -276,6 +275,7 @@ export const extendShare = ( formData ) => ( dispatch ) => {
 
 	const data = new FormData();
 	data.append( 'action', 'extend_sharing_draft' );
+	data.append( 'nonce', APP_DATA.nonce );
 	data.append( 'post_id', formData.post_id );
 	data.append( 'expire_time', formData.expire_time );
 	data.append( 'expire_unit', formData.expire_unit );
