@@ -11,6 +11,9 @@ Text Domain: draftsforfriends
 
 class Drafts_For_Friends	{
 
+	/**
+	*  Initializes class
+	*/
 	public function __construct(){
 		$this->create_constants();
 		$this->include_files();
@@ -23,6 +26,9 @@ class Drafts_For_Friends	{
 		include_once( INCLUDES_PATH . 'admin-ajax.php' );
 	}
 
+	/**
+	*  Define constants for paths
+	*/
 	private function create_constants() {
 		define('ASSETS_PATH',  plugins_url( '/', __FILE__ ) );
 		define('INCLUDES_PATH', WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__) ) . '/' );
@@ -38,6 +44,9 @@ class Drafts_For_Friends	{
 		add_action( 'admin_head', array($this, 'enqueue_scripts' ) );
 	}
 
+	/**
+	*  Build translations object that will be used on the client
+	*/
 	private function get_js_translations(){
 		return array(
 			'share_form-shareit'      => __( 'Share it for', 'draftsforfriends' ),
@@ -60,6 +69,9 @@ class Drafts_For_Friends	{
 		);
 	}
 
+	/**
+	*  Insert javascrip bundle and fontawesome extended with data object
+	*/
 	public function enqueue_scripts() {
 		wp_enqueue_script('fontawesome', 'https://use.fontawesome.com/0d69ee6d38.js');
 		wp_localize_script( 'fontawesome',
@@ -78,12 +90,20 @@ class Drafts_For_Friends	{
 			'publish_posts', __FILE__, array( $this, 'render_sub_menu_page' ) );
 	}
 
+	/**
+	 *  Render the React app here
+	 * @return null
+	 */
 	public function render_sub_menu_page(){
 ?>
 		<div id="react-mount"></div>
 <?php
 	}
 
+	/**
+	*  Check if post is visible for non-admins
+	*  @return bool
+	*/
 	private function can_view( $post_id ) {
 		$transient_name = 'mytransient_' . $post_id;
 		$shared_key = get_transient( $transient_name );

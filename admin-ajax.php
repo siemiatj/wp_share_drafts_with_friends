@@ -5,6 +5,10 @@
  * handles sharing/unsharing drafts via XHR requests
  */
 class Drafts_For_Friends_Admin_Ajax {
+
+	/**
+	*  Initializes class
+	*/
 	public function __construct() {
 		add_action( 'wp_ajax_start_sharing_draft', array(__CLASS__, 'start_sharing_draft' ) );
 		add_action( 'wp_ajax_stop_sharing_draft', array(__CLASS__, 'stop_sharing_draft' ) );
@@ -33,6 +37,10 @@ class Drafts_For_Friends_Admin_Ajax {
 		return $expires * $multiply;
 	}
 
+	/**
+	 * Generic returning draft posts
+	 * @return array of drafts
+	 */
 	public static function get_drafts() {
 		check_ajax_referer( 'my_nonce', 'nonce' );
 
@@ -83,6 +91,10 @@ class Drafts_For_Friends_Admin_Ajax {
 		return $wpdb->get_results("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'future' AND post_author = $user_id ORDER BY post_modified DESC");
 	}
 
+	/**
+	 * Function returning shared drafts
+	 * @return array of drafts
+	 */
 	public static function get_shared_drafts() {
 		check_ajax_referer( 'my_nonce', 'nonce' );
 
@@ -119,12 +131,16 @@ class Drafts_For_Friends_Admin_Ajax {
 		wp_send_json($return);
 	}
 
+	/**
+	 * Function sharing a draft
+	 * @return array with shared draft data
+	 */
 	public static function start_sharing_draft() {
 		check_ajax_referer( 'my_nonce', 'nonce' );
 
 		if ( isset( $_POST['post_id'] ) ) {
 			$post_id = intval( $_POST['post_id'] );
-			$expire_time = intval( $_POST['expire_time'] );
+			$expire_time = intval( sanitize_text_field( $_POST['expire_time'] ) );
 			$expire_unit = $_POST['expire_unit'];
 			$post = get_post( $post_id );
 
@@ -159,12 +175,16 @@ class Drafts_For_Friends_Admin_Ajax {
 		die ( __( 'Bad request format! ', 'draftsforfriends' ) );
 	}
 
+	/**
+	 * Function extending draft sharing
+	 * @return array with extended expiration and post id
+	 */
 	public static function extend_sharing_draft() {
 		check_ajax_referer( 'my_nonce', 'nonce' );
 
 		if ( isset( $_POST['post_id'] ) ) {
 			$post_id = intval( $_POST['post_id'] );
-			$expire_time = intval( $_POST['expire_time'] );
+			$expire_time = intval( sanitize_text_field( $_POST['expire_time'] ) );
 			$expire_unit = $_POST['expire_unit'];
 			$post = get_post( $post_id );
 
@@ -200,6 +220,10 @@ class Drafts_For_Friends_Admin_Ajax {
 		die ( __( 'Bad request format! ', 'draftsforfriends' ) );
 	}
 
+	/**
+	 * Function disabling sharing for a draft
+	 * @return array with result of action and post id
+	 */
 	public static function stop_sharing_draft() {
 		check_ajax_referer( 'my_nonce', 'nonce' );
 
