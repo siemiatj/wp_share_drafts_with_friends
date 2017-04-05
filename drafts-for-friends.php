@@ -61,9 +61,8 @@ class Drafts_For_Friends	{
 	}
 
 	public function enqueue_scripts() {
-		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'jquery-handle-table', ASSETS_PATH . 'build/handle_table.js', array() );
-		wp_localize_script( 'jquery-handle-table',
+		wp_enqueue_script('fontawesome', 'https://use.fontawesome.com/0d69ee6d38.js');
+		wp_localize_script( 'fontawesome',
 			'APP_DATA',
 			array(
 				'nonce' => wp_create_nonce( 'my_nonce' ),
