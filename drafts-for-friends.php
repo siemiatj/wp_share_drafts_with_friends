@@ -20,7 +20,7 @@ class Drafts_For_Friends	{
 	}
 
 	private function include_files() {
-		include_once( INCLUDES_PATH . 'admin-ajax.php');
+		include_once( INCLUDES_PATH . 'admin-ajax.php' );
 	}
 
 	private function create_constants() {
@@ -30,33 +30,33 @@ class Drafts_For_Friends	{
 
 	public function init() {
 		add_filter( 'the_posts', array( $this, 'the_posts_intercept' ) );
-		add_filter( 'posts_results', array( $this, 'posts_results_intercept' ));
+		add_filter( 'posts_results', array( $this, 'posts_results_intercept' ) );
 	}
 
 	public function admin_page_init() {
 		add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
-		add_action('admin_head', array($this, 'enqueue_scripts'));
+		add_action( 'admin_head', array($this, 'enqueue_scripts' ) );
 	}
 
 	private function get_js_translations(){
 		return array(
-			'share_form-shareit'      => __('Share it', 'draftsforfriends'),
-			'share_form-chooseadraft' => __( 'Choose a draft', 'draftsforfriends'),
-			'extend_form-extendfor'   => __( 'Extend for', 'draftsforfriends'),
-			'shared_grid-nodrafts'    => __( 'No shared drafts !', 'draftsforfriends'),
-			'shared_grid-extend'      => __( 'Extend', 'draftsforfriends'),
-			'shared_grid-stopsharing' => __( 'Stop sharing', 'draftsforfriends'),
-			'shared_grid-cancel'      => __( 'Cancel', 'draftsforfriends'),
-			'shared_grid-title'       => __( 'Title', 'draftsforfriends'),
-			'shared_grid-link'        => __( 'Link', 'draftsforfriends'),
-			'shared_grid-expires'     => __( 'Expires', 'draftsforfriends'),
-			'shared_grid-actions'     => __( 'Actions', 'draftsforfriends'),
-			'share_time_fields-s'     => __( 'seconds', 'draftsforfriends'),
-			'share_time_fields-m'     => __( 'minutes', 'draftsforfriends'),
-			'share_time_fields-h'     => __( 'hours', 'draftsforfriends'),
-			'share_time_fields-d'     => __( 'days', 'draftsforfriends'),
-			'app-currentlyshared'     => __( 'Currently shared drafts', 'draftsforfriends'),
-			'app-sharedrafts'         => __( 'Share Drafts', 'draftsforfriends')
+			'share_form-shareit'      => __( 'Share it for', 'draftsforfriends' ),
+			'share_form-chooseadraft' => __( 'Choose a draft', 'draftsforfriends' ),
+			'extend_form-extendfor'   => __( 'Extend for', 'draftsforfriends' ),
+			'shared_grid-nodrafts'    => __( 'No shared drafts !', 'draftsforfriends' ),
+			'shared_grid-extend'      => __( 'Extend', 'draftsforfriends' ),
+			'shared_grid-stopsharing' => __( 'Stop sharing', 'draftsforfriends' ),
+			'shared_grid-cancel'      => __( 'Cancel', 'draftsforfriends' ),
+			'shared_grid-title'       => __( 'Title', 'draftsforfriends' ),
+			'shared_grid-link'        => __( 'Link', 'draftsforfriends' ),
+			'shared_grid-expires'     => __( 'Expires', 'draftsforfriends' ),
+			'shared_grid-actions'     => __( 'Actions', 'draftsforfriends' ),
+			'share_time_fields-s'     => __( 'seconds', 'draftsforfriends' ),
+			'share_time_fields-m'     => __( 'minutes', 'draftsforfriends' ),
+			'share_time_fields-h'     => __( 'hours', 'draftsforfriends '),
+			'share_time_fields-d'     => __( 'days', 'draftsforfriends' ),
+			'app-currentlyshared'     => __( 'Currently shared drafts', 'draftsforfriends' ),
+			'app-sharedrafts'         => __( 'Share Drafts', 'draftsforfriends' )
 		);
 	}
 
@@ -75,7 +75,7 @@ class Drafts_For_Friends	{
 	}
 
 	public function add_admin_pages(){
-		add_submenu_page( 'edit.php', __('Drafts for Friends', 'draftsforfriends'), __('Drafts for Friends', 'draftsforfriends'),
+		add_submenu_page( 'edit.php', __( 'Drafts for Friends', 'draftsforfriends' ), __( 'Drafts for Friends', 'draftsforfriends' ),
 			'publish_posts', __FILE__, array( $this, 'render_sub_menu_page' ) );
 	}
 

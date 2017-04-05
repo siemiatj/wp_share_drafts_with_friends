@@ -43,7 +43,7 @@ msgid "Post no longer shared!"
 msgstr ""
 
 #: drafts-for-friends.php:43
-msgid "Share it"
+msgid "Share it for"
 msgstr ""
 
 #: drafts-for-friends.php:44
