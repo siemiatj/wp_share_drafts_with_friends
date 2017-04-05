@@ -103,6 +103,7 @@ class Drafts_For_Friends_Admin_Ajax {
 		$return = array();
 
 		$posts = get_posts( array(
+			'posts_per_page'   => -1,
 			'post_type'        => 'post',
 			'post_status'      => array( 'draft', 'pending', 'future' )
 		) );
@@ -110,7 +111,6 @@ class Drafts_For_Friends_Admin_Ajax {
 		foreach ( $posts as $post ) {
 			$transient_name = 'mytransient_' . $post->ID;
 			$shared_key = get_transient( $transient_name );
-			$return = array();
 
 			if ( $shared_key ) {
 				$url         = get_bloginfo( 'url' ) . '/?p=' . $post->ID . '&draftsforfriends='. $shared_key;
@@ -121,7 +121,7 @@ class Drafts_For_Friends_Admin_Ajax {
 					'expires'   => $expiration * 1000,
 					'url'       => $url
 				);
-				$return[]   = array(
+				$return[]    = array(
 					'shared'    => $shared_data,
 					'post'      => $post
 				);
