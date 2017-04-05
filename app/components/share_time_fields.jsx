@@ -1,6 +1,14 @@
+/**
+ * @module components/share_time_fields
+ */
 import React from 'react';
 import { Field } from 'redux-form';
 
+/**
+ * Form fields component for showing share time options
+ *
+ * @returns {void}
+ */
 const ShareTimeFields = () => (
 	<div className="form-time-fields">
 		<Field

@@ -1,9 +1,15 @@
+/**
+ * @module containers/shared_grid
+ */
 import React, { Component, PropTypes } from 'react';
 import { v4 } from 'node-uuid';
 import { reduxForm, Field, FormSection } from 'redux-form';
 import ShareTimeFields from 'components/share_time_fields';
 import ActionIndicator from 'components/action_indicator';
 
+/**
+ * Form component for sharing a draft wrapped by redux-form
+ */
 class ShareForm extends Component {
 	renderDraftOptions() {
 		const { drafts } = this.props;
@@ -74,6 +80,14 @@ export default reduxForm( {
 	form: 'share-form',
 } )( ShareForm );
 
+/**
+ * PropTypes.
+ *
+ * @property {array} drafts - list of drafts to render in the select dropdown
+ * @property {bool} xhrRequest - boolean value controlling if AJAX request is happening
+ * @property {func} onFormSubmit - function called when form is submitted
+ * @property {func} handleSubmit - internal redux-form
+ */
 ShareForm.propTypes = {
 	drafts: PropTypes.array,
 	xhrRequest: PropTypes.bool,

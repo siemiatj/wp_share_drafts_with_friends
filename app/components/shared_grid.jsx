@@ -1,3 +1,6 @@
+/**
+ * @module components/shared_grid
+ */
 import React, { Component, PropTypes } from 'react';
 import { v4 } from 'node-uuid';
 import moment from 'moment';
@@ -5,6 +8,9 @@ import classnames from 'classnames';
 import ExtendForm from 'containers/extend_form';
 import ActionIndicator from 'components/action_indicator';
 
+/**
+ * Component rendering the shared drafts grid and handling share extend form submission
+ */
 export default class SharedGrid extends Component {
 	constructor( props ) {
 		super( props );
@@ -148,6 +154,15 @@ export default class SharedGrid extends Component {
 	}
 }
 
+/**
+ * PropTypes.
+ *
+ * @property {array} drafts - list of drafts to render in the select dropdown
+ * @property {bool} xhrRequest - boolean value controlling if AJAX request is happening
+ * @property {func} getSharedDrafts - action creator to get shared drafts
+ * @property {func} unShareDraft - action creator to stop sharing a draft
+ * @property {func} extendShare - action creator to extend draft sharing time
+ */
 SharedGrid.propTypes = {
 	drafts: PropTypes.array,
 	xhrRequest: PropTypes.bool,

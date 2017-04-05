@@ -1,3 +1,6 @@
+/**
+ * @module ducks
+ */
 import request from 'axios';
 import reject from 'lodash.reject';
 
