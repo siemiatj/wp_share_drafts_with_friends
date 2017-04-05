@@ -8,6 +8,7 @@ import { getDrafts, shareDraft } from 'ducks';
 function mapStateToProps( state ) {
 	return {
 		drafts: state.drafts.drafts,
+		xhrRequest: state.drafts.isFetching,
 	};
 }
 

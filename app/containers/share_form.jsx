@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { v4 } from 'node-uuid';
 import { reduxForm, Field, FormSection } from 'redux-form';
 import ShareTimeFields from 'components/share_time_fields';
+import ActionIndicator from 'components/action_indicator';
 
 class ShareForm extends Component {
 	renderDraftOptions() {
@@ -48,10 +49,11 @@ class ShareForm extends Component {
 	}
 
 	render() {
-		const { onFormSubmit, handleSubmit } = this.props;
+		const { xhrRequest, onFormSubmit, handleSubmit } = this.props;
 
 		return (
 			<form className="draft-share" onSubmit={ handleSubmit( onFormSubmit ) }>
+				{ xhrRequest && <ActionIndicator /> }
 				<div>
 					{ this.renderDraftSelect() }
 				</div>
@@ -74,6 +76,7 @@ export default reduxForm( {
 
 ShareForm.propTypes = {
 	drafts: PropTypes.array,
+	xhrRequest: PropTypes.bool,
 	onFormSubmit: PropTypes.func,
 	handleSubmit: PropTypes.func,
 };

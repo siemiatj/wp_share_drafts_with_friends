@@ -3,6 +3,7 @@ import { v4 } from 'node-uuid';
 import moment from 'moment';
 import classnames from 'classnames';
 import ExtendForm from 'containers/extend_form';
+import ActionIndicator from 'components/action_indicator';
 
 export default class SharedGrid extends Component {
 	constructor( props ) {
@@ -119,31 +120,37 @@ export default class SharedGrid extends Component {
 
 	render() {
 		return (
-			<table className={ classnames( 'widefat shared-drafts-table' ) }>
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>{ APP_DATA.translations[ 'shared_grid-title' ] }</th>
-						<th>{ APP_DATA.translations[ 'shared_grid-link' ] }</th>
-						<th>{ APP_DATA.translations[ 'shared_grid-expires' ] }</th>
-						<th className="actions-header">
-							{ APP_DATA.translations[ 'shared_grid-actions' ] }
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{ ! this.props.drafts.length
-						? this.renderEmptySharedPosts()
-						: this.renderSharedPosts()
-					}
-				</tbody>
-			</table>
+			<div className="shared-drafts-wrapper">
+				<table className={ classnames( 'widefat shared-drafts-table' ) }>
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>{ APP_DATA.translations[ 'shared_grid-title' ] }</th>
+							<th>{ APP_DATA.translations[ 'shared_grid-link' ] }</th>
+							<th>{ APP_DATA.translations[ 'shared_grid-expires' ] }</th>
+							<th className="actions-header">
+								{ APP_DATA.translations[ 'shared_grid-actions' ] }
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{ ! this.props.drafts.length
+							? this.renderEmptySharedPosts()
+							: this.renderSharedPosts()
+						}
+					</tbody>
+				</table>
+				{ this.props.xhrRequest &&
+					<ActionIndicator />
+				}
+			</div>
 		);
 	}
 }
 
 SharedGrid.propTypes = {
 	drafts: PropTypes.array,
+	xhrRequest: PropTypes.bool,
 	getSharedDrafts: PropTypes.func,
 	unShareDraft: PropTypes.func,
 	extendShare: PropTypes.func,

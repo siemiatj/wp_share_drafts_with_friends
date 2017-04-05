@@ -23,13 +23,18 @@ export default class ShareDrafts extends Component {
 
 	render() {
 		return (
-			<ShareForm onFormSubmit={ this.formSubmit } drafts={ this.props.drafts } />
+			<ShareForm
+				xhrRequest={ this.props.xhrRequest }
+				drafts={ this.props.drafts }
+				onFormSubmit={ this.formSubmit }
+			/>
 		);
 	}
 }
 
 ShareDrafts.propTypes = {
 	drafts: PropTypes.array,
+	xhrRequest: PropTypes.bool,
 	getDrafts: PropTypes.func,
 	shareDraft: PropTypes.func,
 };
