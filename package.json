@@ -7,7 +7,7 @@
     "build": "webpack --config ./webpack.config.js",
     "build:watch": "webpack --config ./webpack.config.js --watch",
     "build:prod": "NODE_ENV=production webpack -p --config ./webpack.config.js",
-    "test": "NODE_ENV=test mocha-webpack --require ./tests/setup.js --webpack-config ./webpack.config.test.js \"tests/**/*.test.js\"",
+    "test": "NODE_ENV=test mocha-webpack --require ./app/tests/setup.js --webpack-config ./webpack.config.test.js \"app/tests/**/*.test.js\"",
     "test:watch": "npm test -- --watch --full-trace"
   },
   "dependencies": {
