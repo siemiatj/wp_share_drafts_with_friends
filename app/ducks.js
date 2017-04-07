@@ -6,25 +6,7 @@ import reject from 'lodash.reject';
 
 /* ENTRY ACTIONS
 ================================================================================================ */
-const FETCH_DRAFTS_REQUEST = 'draftsforfriends/FETCH_DRAFTS_REQUEST';
-const FETCH_DRAFTS_SUCCESS = 'draftsforfriends/FETCH_DRAFTS_SUCCESS';
-const FETCH_DRAFTS_FAILURE = 'draftsforfriends/FETCH_DRAFTS_FAILURE';
-
-const FETCH_SHARED_DRAFTS_REQUEST = 'draftsforfriends/FETCH_SHARED_DRAFTS_REQUEST';
-const FETCH_SHARED_DRAFTS_SUCCESS = 'draftsforfriends/FETCH_SHARED_DRAFTS_SUCCESS';
-const FETCH_SHARED_DRAFTS_FAILURE = 'draftsforfriends/FETCH_SHARED_DRAFTS_FAILURE';
-
-const SHARE_DRAFT_REQUEST = 'draftsforfriends/SHARE_DRAFT_REQUEST';
-const SHARE_DRAFT_SUCCESS = 'draftsforfriends/SHARE_DRAFT_SUCCESS';
-const SHARE_DRAFT_FAILURE = 'draftsforfriends/SHARE_DRAFT_FAILURE';
-
-const UNSHARE_DRAFT_REQUEST = 'draftsforfriends/UNSHARE_DRAFT_REQUEST';
-const UNSHARE_DRAFT_SUCCESS = 'draftsforfriends/UNSHARE_DRAFT_SUCCESS';
-const UNSHARE_DRAFT_FAILURE = 'draftsforfriends/UNSHARE_DRAFT_FAILURE';
-
-const EXTEND_SHARE_REQUEST = 'draftsforfriends/EXTEND_SHARE_REQUEST';
-const EXTEND_SHARE_SUCCESS = 'draftsforfriends/EXTEND_SHARE_SUCCESS';
-const EXTEND_SHARE_FAILURE = 'draftsforfriends/EXTEND_SHARE_FAILURE';
+import * as ACTIONS from 'redux_actions';
 
 /* INITIAL STATES
 ================================================================================================ */
@@ -42,30 +24,30 @@ export const initialState = {
 ================================================================================================ */
 export default function reducer( state = initialState, action ) {
 	switch ( action.type ) {
-		case FETCH_DRAFTS_REQUEST:
-		case FETCH_SHARED_DRAFTS_REQUEST:
-		case SHARE_DRAFT_REQUEST:
-		case UNSHARE_DRAFT_REQUEST:
-		case EXTEND_SHARE_REQUEST:
+		case ACTIONS.FETCH_DRAFTS_REQUEST:
+		case ACTIONS.FETCH_SHARED_DRAFTS_REQUEST:
+		case ACTIONS.SHARE_DRAFT_REQUEST:
+		case ACTIONS.UNSHARE_DRAFT_REQUEST:
+		case ACTIONS.EXTEND_SHARE_REQUEST:
 			return {
 				...state,
 				isFetching: true,
 			};
-		case FETCH_DRAFTS_SUCCESS:
+		case ACTIONS.FETCH_DRAFTS_SUCCESS:
 			return {
 				...state,
 				drafts: [ ...action.payload ],
 				isFetching: false,
 				isError: false,
 			};
-		case FETCH_SHARED_DRAFTS_SUCCESS:
+		case ACTIONS.FETCH_SHARED_DRAFTS_SUCCESS:
 			return {
 				...state,
 				sharedDrafts: [ ...action.payload ],
 				isFetching: false,
 				isError: false,
 			};
-		case SHARE_DRAFT_SUCCESS:
+		case ACTIONS.SHARE_DRAFT_SUCCESS:
 			const newDraft = { ...action.payload[ 0 ] };
 
 			return {
@@ -77,7 +59,7 @@ export default function reducer( state = initialState, action ) {
 				isFetching: false,
 				isError: false,
 			};
-		case UNSHARE_DRAFT_SUCCESS:
+		case ACTIONS.UNSHARE_DRAFT_SUCCESS:
 			const result = action.payload.result;
 			const draftId = parseInt( action.payload.post_id, 10 );
 			let newDraftsArray = [ ...state.sharedDrafts ];
@@ -92,7 +74,7 @@ export default function reducer( state = initialState, action ) {
 				isFetching: false,
 				isError: false,
 			};
-		case EXTEND_SHARE_SUCCESS:
+		case ACTIONS.EXTEND_SHARE_SUCCESS:
 			const payload = action.payload;
 			const newDrafts = [];
 
@@ -113,11 +95,11 @@ export default function reducer( state = initialState, action ) {
 				isFetching: false,
 				isError: false,
 			};
-		case FETCH_DRAFTS_FAILURE:
-		case FETCH_SHARED_DRAFTS_FAILURE:
-		case SHARE_DRAFT_FAILURE:
-		case UNSHARE_DRAFT_FAILURE:
-		case EXTEND_SHARE_FAILURE:
+		case ACTIONS.FETCH_DRAFTS_FAILURE:
+		case ACTIONS.FETCH_SHARED_DRAFTS_FAILURE:
+		case ACTIONS.SHARE_DRAFT_FAILURE:
+		case ACTIONS.UNSHARE_DRAFT_FAILURE:
+		case ACTIONS.EXTEND_SHARE_FAILURE:
 			return {
 				...state,
 				isFetching: false,
@@ -132,21 +114,21 @@ export default function reducer( state = initialState, action ) {
 ================================================================================================ */
 const getDraftsSuccess = ( responseData ) => (
 	{
-		type: FETCH_DRAFTS_SUCCESS,
+		type: ACTIONS.FETCH_DRAFTS_SUCCESS,
 		payload: responseData,
 	}
 );
 
 const getDraftsFailure = ( error ) => (
 	{
-		type: FETCH_DRAFTS_FAILURE,
+		type: ACTIONS.FETCH_DRAFTS_FAILURE,
 		payload: null,
 		error,
 	}
 );
 
 export const getDrafts = () => ( dispatch ) => {
-	dispatch( { type: FETCH_DRAFTS_REQUEST } );
+	dispatch( { type: ACTIONS.FETCH_DRAFTS_REQUEST } );
 
 	return request.get( `${ APP_DATA.ajax_url }?action=get_drafts&nonce=${ APP_DATA.nonce }` )
 	.then( resp => {
@@ -159,21 +141,21 @@ export const getDrafts = () => ( dispatch ) => {
 
 const getSharedDraftsSuccess = ( responseData ) => (
 	{
-		type: FETCH_SHARED_DRAFTS_SUCCESS,
+		type: ACTIONS.FETCH_SHARED_DRAFTS_SUCCESS,
 		payload: responseData,
 	}
 );
 
 const getSharedDraftsFailure = ( error ) => (
 	{
-		type: FETCH_SHARED_DRAFTS_FAILURE,
+		type: ACTIONS.FETCH_SHARED_DRAFTS_FAILURE,
 		payload: null,
 		error,
 	}
 );
 
 export const getSharedDrafts = () => ( dispatch ) => {
-	dispatch( { type: FETCH_SHARED_DRAFTS_REQUEST } );
+	dispatch( { type: ACTIONS.FETCH_SHARED_DRAFTS_REQUEST } );
 
 	return request.get( `${ APP_DATA.ajax_url }?action=get_shared_drafts&nonce=${ APP_DATA.nonce }` )
 	.then( resp => {
@@ -186,21 +168,21 @@ export const getSharedDrafts = () => ( dispatch ) => {
 
 const shareDraftSuccess = ( responseData ) => (
 	{
-		type: SHARE_DRAFT_SUCCESS,
+		type: ACTIONS.SHARE_DRAFT_SUCCESS,
 		payload: responseData,
 	}
 );
 
 const shareDraftFailure = ( error ) => (
 	{
-		type: SHARE_DRAFT_FAILURE,
+		type: ACTIONS.SHARE_DRAFT_FAILURE,
 		payload: null,
 		error,
 	}
 );
 
 export const shareDraft = ( formData ) => ( dispatch ) => {
-	dispatch( { type: SHARE_DRAFT_REQUEST } );
+	dispatch( { type: ACTIONS.SHARE_DRAFT_REQUEST } );
 
 	const data = new FormData();
 	data.append( 'action', 'start_sharing_draft' );
@@ -227,21 +209,21 @@ export const shareDraft = ( formData ) => ( dispatch ) => {
 
 const unShareDraftSuccess = ( responseData ) => (
 	{
-		type: UNSHARE_DRAFT_SUCCESS,
+		type: ACTIONS.UNSHARE_DRAFT_SUCCESS,
 		payload: responseData,
 	}
 );
 
 const unShareDraftFailure = ( error ) => (
 	{
-		type: UNSHARE_DRAFT_FAILURE,
+		type: ACTIONS.UNSHARE_DRAFT_FAILURE,
 		payload: null,
 		error,
 	}
 );
 
 export const unShareDraft = ( postId ) => ( dispatch ) => {
-	dispatch( { type: UNSHARE_DRAFT_REQUEST } );
+	dispatch( { type: ACTIONS.UNSHARE_DRAFT_REQUEST } );
 
 	const opts = {
 		method: 'delete',
@@ -260,21 +242,21 @@ export const unShareDraft = ( postId ) => ( dispatch ) => {
 
 const extendShareSuccess = ( responseData ) => (
 	{
-		type: EXTEND_SHARE_SUCCESS,
+		type: ACTIONS.EXTEND_SHARE_SUCCESS,
 		payload: responseData,
 	}
 );
 
 const extendShareFailure = ( error ) => (
 	{
-		type: EXTEND_SHARE_FAILURE,
+		type: ACTIONS.EXTEND_SHARE_FAILURE,
 		payload: null,
 		error,
 	}
 );
 
 export const extendShare = ( formData ) => ( dispatch ) => {
-	dispatch( { type: EXTEND_SHARE_REQUEST } );
+	dispatch( { type: ACTIONS.EXTEND_SHARE_REQUEST } );
 
 	const data = new FormData();
 	data.append( 'action', 'extend_sharing_draft' );
