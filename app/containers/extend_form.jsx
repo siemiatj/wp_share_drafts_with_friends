@@ -4,6 +4,7 @@
 import React, { Component, PropTypes } from 'react';
 import { reduxForm, FormSection } from 'redux-form';
 import ShareTimeFields from 'components/share_time_fields';
+import AnimatedButton from 'components/animated_button';
 
 /**
  * Form component for extending draft sharing wrapped by redux-form
@@ -14,9 +15,10 @@ class ExtendForm extends Component {
 
 		return (
 			<form className="draft-extend" onSubmit={ handleSubmit( onFormSubmit ) }>
-				<button type="submit" className="button">
-					{ APP_DATA.translations[ 'extend_form-extendfor' ] }
-				</button>
+				<AnimatedButton
+					type={ 'submit' }
+					text={ APP_DATA.translations[ 'extend_form-extendfor' ] }
+				/>
 				<FormSection name="draft-extend">
 					<ShareTimeFields />
 				</FormSection>

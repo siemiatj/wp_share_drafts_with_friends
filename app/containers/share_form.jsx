@@ -6,6 +6,7 @@ import { v4 } from 'node-uuid';
 import { reduxForm, Field, FormSection } from 'redux-form';
 import ShareTimeFields from 'components/share_time_fields';
 import ActionIndicator from 'components/action_indicator';
+import AnimatedButton from 'components/animated_button';
 
 /**
  * Form component for sharing a draft wrapped by redux-form
@@ -64,9 +65,10 @@ class ShareForm extends Component {
 					{ this.renderDraftSelect() }
 				</div>
 				<div>
-					<button type="submit" className="button">
-						{ APP_DATA.translations[ 'share_form-shareit' ] }
-					</button>
+					<AnimatedButton
+						type={ 'submit' }
+						text={ APP_DATA.translations[ 'share_form-shareit' ] }
+					/>
 				</div>
 				<FormSection name="draft-share">
 					<ShareTimeFields />
