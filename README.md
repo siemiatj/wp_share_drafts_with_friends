@@ -6,10 +6,9 @@ that don't require authentication.
 ## Installation
 
 You will need [node & npm](https://nodejs.org/en/) installed on your machine to build the plugin assets.
+If you already have them run:
 
-Then run
-
-`npm build:prod`
+`npm install && npm run build:prod`
 
 After the js bundle is ready the last thing that is required is copying:
 
